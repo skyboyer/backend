@@ -1,0 +1,24 @@
+body {	
+	background-color: #2F3336;
+	color: #efefef;
+    font-size: 17px;
+}
+h1.logo {
+	font-size: 44px;
+	font-weight: 700;
+	color: #ddd;
+	text-align: center;
+	letter-spacing: 5px;
+	margin-top: 20px;
+	margin-bottom: 10px;
+}
+
+.content {
+	margin: auto;
+	width: 950px;
+	text-align: left;
+	padding: 0;
+	background-color: gainsboro;
+	color: black;
+	margin-top:10px;
+}
