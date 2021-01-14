@@ -6,9 +6,38 @@
 
 {% block content %}  
     
-    <h1>PRODUCT</h1>   
+    <h1>List of Products</h1>   
 
-    {{id}}
+    {{form(form)}}
+
+    <button type="button"><a class="button" href="{{ path('product') }}">Show all items</a></button>
+
+    <button type="button" id="addbutton"><a class="button" target="_blanc" href="{{ path('product_add') }}">Add new product</a></button>
+
+    {% if not products %}
+            NO MATCHING!!
+        {% else %}  
+            <table>
+                <tr>
+                    <th>Name</th><th>Information</th><th>Publication date</th><th>Change the product</th>
+                </tr>
+                
+                {% for item in products %} 
+                   
+                                 
+                        <tr>
+                            <td> {{item.name}} </td>
+                            <td> {{item.info}} </td>
+                            <td> 
+                                {{item.publicdate}}
+                            </td>
+                            <td><a target="_blanc" href="{{ path('product_edit', {id: item.id}) }}">edit the product</a></td>
+                        </tr>
+                   
+                {% endfor %}   
+            
+            </table>
+        {% endif %}  
 
 {% endblock %}  
 

@@ -6,3 +6,15 @@
 product:
             path: /product
             controller: App\Controller\ProductController::product
+
+product_add:
+            path: /products/add
+            controller: App\Controller\ProductAddController::product_add
+
+product_edit:
+            path: /products/edit/{id}
+            controller: App\Controller\ProductEditController::product_edit  
+
+product_delete:
+            path: /products/delete/{id}
+            controller: App\Controller\ProductEditController::product_delete
