@@ -31,17 +31,7 @@
                             <td> {{person.login}} </td>
                             <td> {{person.iname}} </td>
                             <td> {{person.fname}} </td>
-                            <td> 
-                                
-                                {% if person.state == active %} 
-                                    ACTIVE
-                                {% elseif person.state == banned %}
-                                    BANNED
-                                {% else %}
-                                    DELETED    
-                                {% endif %}  
-                            
-                            </td>
+                            <td> {{ person.getStateString }} </td>
                             <td><a target="_blanc" href="{{ path('person_edit', {id: person.id}) }}">edit the user>></a></td>
                         </tr>
                 {% endfor %}   

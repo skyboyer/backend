@@ -29,7 +29,7 @@ class PersonEditController extends AbstractController
         $login1=$person->getLogin();
         $i_name1=$person->getIName();
         $f_name1=$person->getFName();
-        $state1=$person->getState();
+        $state1=$person->getStateString();
                 
         $form = $this->createForm (PersonType::class, $person)
                         ->add('save', SubmitType::class, ['label'=> 'Save changes']);

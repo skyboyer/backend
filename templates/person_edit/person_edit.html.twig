@@ -12,15 +12,7 @@
     Login: {{login1}}:<br>
     Name: {{i_name1}}<br>
     Surname: {{f_name1}}<br>
-    State: {% if state1 == active %} 
-                ACTIVE
-            {% elseif state1 == banned %}
-                BANNED
-            {% else %}
-                DELETED    
-            {% endif %} 
-
-    <br><br>
+    State: {{state1}}<br><br>
     
     <span>Enter your changes:</span><br>
     {{form(form)}}
@@ -28,17 +20,12 @@
     
     {% if save == 'saved' %}
 
-            <span>Changes in product with id {{id}} was saved:</span><br>
-            new Login: {{person.login}}<br>
-            new Name: {{person.iname}}<br>
-            new Surname:{{person.fname}}<br>
-            new State:  {% if person.state == active %} 
-                            ACTIVE
-                        {% elseif person.state == banned %}
-                            BANNED
-                        {% else %}
-                            DELETED    
-                        {% endif %} 
+        <span>Changes in product with id {{id}} was saved:</span><br>
+        new Login: {{person.login}}<br>
+        new Name: {{person.iname}}<br>
+        new Surname:{{person.fname}}<br>
+        new State:  {{ person.getStateString }} 
+                         
     {% endif %}
 
 {% endblock %}

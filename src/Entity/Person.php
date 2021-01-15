@@ -94,11 +94,11 @@ class Person
     public const BANNED=2;
     public const DELETED=3;
 
-    public function getStateString (int $state) : string
+    public function getStateString () : string
     {
-        if ($state==1) $state_string = 'active';
-        if ($state==2) $state_string = 'banned';
-        if ($state==3) $state_string = 'deleted';
+        if ($this->getState()==Person::ACTIVE) $state_string = ACTIVE;
+        if ($this->getState()==Person::BANNED) $state_string = 'BANNED';
+        if ($this->getState()==Person::DELETED) $state_string = 'DELETED';
         
         return $state_string;
     }
