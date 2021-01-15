@@ -28,7 +28,7 @@ label {
 	width: 200px;
 	box-sizing: content-box;
 }
-input, textarea {
+input, select, option {
 	color: black;
 	width: 250px;
 	padding: 2px;
