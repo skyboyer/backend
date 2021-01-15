@@ -23,110 +23,71 @@ class ProductEditController extends AbstractController
         $productManager = $this->getDoctrine()->getManager();
         $product = $productManager->getRepository(Product::class)->find($id);
 
-        $name1=$product->getName();
-        $price1=$product->getPrice();
-        $description1=$product->getDescription();
-               
-               
-        if ($image1 != null) {
-            $product->setImage(
-                new File($this->getParameter('images_directory').'/'.$product->getImage())
-            );
+        if ( $product==null ) {
+            return $this->redirectToRoute('product');
         }
-
-        $form1 = $this->createForm (ProductType::class, $product)
-            ->add('image', FileType::class, ['label' => 'Image of the Product (JPG or PNG file):' ,
-                                            'required' => false, 
-                                            'attr' => array('accept'=> 'image/png, image/jpeg'),
-                                                ])
-
-            ->add('delimage', CheckboxType::class, ['label'=> 'Delete all images:',
-                                                    'required' => false, 
-                                                    'mapped' => false,
-                                                    ])
-
-            ->add('save', SubmitType::class, ['label'=> 'Save changes']);
-       
-                 
-        $form2 = $this->createFormBuilder()
-            ->add('send', SubmitType::class, ['label'=>'Delete the item!!'])
-            ->getForm();
-        
-        $form1->handleRequest($request);
-        $form2->handleRequest($request);
-
-        if ($form1->isSubmitted()) {
-            $save='saved';
+        else {
+            $name1=$product->getName();
+            $date1=date_format($product->getPublicDate(), 'Y-m-d');
+            $info1=$product->getInfo();
+                
+            $form1 = $this->createForm (ProductType::class, $product)
+                            ->add('public_date', DateType::class, [
+                                'label'=>'Date of publication',
+                                'widget' => 'single_text',
+                                ] )
+                            ->add('save', SubmitType::class, ['label'=> 'Save changes']);
+    
+            $form2 = $this->createFormBuilder()
+                ->add('send', SubmitType::class, ['label'=>'Delete the Product!!'])
+                ->getForm();
             
-            $image = $product->getImage();
-            $checkbox = $form1->get('delimage')->getData();
+            $form1->handleRequest($request);
+            $form2->handleRequest($request);
 
-            if ($checkbox) {
-
-                $product->setImage(null);
-
-            }   
-            else {    
-                if ($image) {
-                                    
-                    $imageName = $this->generateUniqueImageName().'.'.$image->guessExtension();
-                    
-                    $image->move(
-                        $this->getParameter('images_directory'),
-                        $imageName
-                        );
-
-                    $product->setImage($imageName);
-                }
-                else {
-                    $product->setImage($image1);
-                }
-            }
-            $productManager->flush();
-                                      
-            $contents = $this->renderView('product_edit/product_edit.html.twig',
-                [
-                    'form1' => $form1->createView(),
-                    'form2' => $form2->createView(),
-                    'id'=> $id,
-                    'name1'=> $name1,
-                    'price1'=> $price1,
-                    'description1'=> $description1,
-                    'category1' => $category1,
-                    'image1' => $image1,
-                    'product' => $product,
-                    'save'=>$save,
-                    'quantity'=>$this->session->get($id),
-                ],
-            );
-            return new Response($contents);
-        }
-        else if ($form2->isSubmitted()) {
-            
-            return $this->redirectToRoute('product_delete', ['id' => $id]);
-            
-        }
-        else 
-        {
-            $contents = $this->renderView('product_edit/product_edit.html.twig',
+            if ($form1->isSubmitted()) {
+                $save='saved';
+                
+                $productManager->flush();
+                                        
+                $contents = $this->renderView('product_edit/product_edit.html.twig',
                     [
                         'form1' => $form1->createView(),
                         'form2' => $form2->createView(),
                         'id'=> $id,
                         'name1'=> $name1,
-                        'price1'=> $price1,
-                        'description1'=> $description1,
-                        'category1' => $category1,
-                        'image1' => $image1,
-                        'product' => $product,
-                        'quantity'=>$this->session->get($id, 0),
-                    ],
+                        'date1'=> $date1,
+                        'info1'=> $info1,
+                        //'product' => $product,
+                        'save'=>$save,
+                ],
                 );
-            return new Response($contents);
-        }
-        
-    }
+                return new Response($contents);
+            }
 
+            else if ($form2->isSubmitted()) {
+                
+                return $this->redirectToRoute('product_delete', ['id' => $id]);
+                
+            }
+            else 
+            {
+                $contents = $this->renderView('product_edit/product_edit.html.twig',
+                        [
+                            'form1' => $form1->createView(),
+                            'form2' => $form2->createView(),
+                            'id'=> $id,
+                            'name1'=> $name1,
+                            'date1'=> $date1,
+                            'info1'=> $info1,
+                            //'product' => $product,
+                        ],
+                    );
+                return new Response($contents);
+            }
+            
+        }
+    }
        
     public function product_delete ($id)
     {
@@ -136,7 +97,7 @@ class ProductEditController extends AbstractController
         $productManager->remove($product);
         $productManager->flush();
 
-        return $this->redirectToRoute('products');
+        return $this->redirectToRoute('product');
     }
 
     

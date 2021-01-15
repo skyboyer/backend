@@ -8,20 +8,10 @@
 
     <h1>CHANGING ITEMS</h1>     
 
-    <span>You are changing the item with id {{id}}:</span><br>
-    {{name1}} - {{price1}} ({{description1}}) <br>
-    Category: {{category1.name}} <br>
-    Image of the Product:<br>
-    {% if image1 != null %}
-        <a href="{{ asset('uploads/images/' ~ image1) }}"><img src="{{ asset('uploads/images/' ~ image1) }}" alt="product"></a> 
-              
-       {# <img src="{{ asset('uploads/images/' ~ image1) }}" alt="product"> #}
+    <span>You are changing the the Product with id {{id}}:</span><br>
+    {{name1}} from {{date1}}<br>
+    ({{info1}}) <br>
 
-    {% else %}
-
-        <span class = "image">     < no image ></span>
-        
-    {% endif %}
     <br><br>
     
     <span>Enter your changes:</span><br>
@@ -29,39 +19,19 @@
         
     {{form(form2)}}
     
-    <br><br>
+    <br>
+    
     {% if save is defined%}
 
         {% if save == "saved" %}  
         
-            <span>Changes in product with id {{product.id}} was saved:</span><br>
-            new Name: {{product.name}}<br>
-            new Price: {{product.price}}<br>
-            new Description: {{product.description}}<br>
-            new Category: {{product.category.name}}<br>
+            <span>Changes in product with id {{id}} was saved:</span><br>
+            new Name: {{name1}}<br>
+            new Date: {{date1}}<br>
+            new Information: {{info1}}<br>
             
-            {% if  product.image != null %}
-                new Image:  <a href="{{ asset('uploads/images/' ~ product.image) }}"><img src="{{ asset('uploads/images/' ~ product.image) }}" alt="product"></a> 
-            {% else %}
-                <span class = "image">     < no image ></span><br>
-            {% endif %}
-    
-     {#   {% elseif save == "deleted" %}
-            <span>Product with id {{id}} was DELETED!!:</span><br>
-            Name: {{product.name}}<br>
-            Price: {{product.price}}<br>
-            Description: {{product.description}}<br>  #}
-
+           
         {% endif %}
     {% endif %}
-
-    <a class="button" href="{{ path('product_tocart', {id: id}) }}"><span class="plus"> + </span></a>
     
-    <span style = "font-size:40px; white-space: pre; ">    {{quantity}} product/s in cart    </span>
-
-    {% if quantity is defined and quantity != null %} 
-        <a class="button" href="{{ path('product_fromcart', {id: id}) }}"><span class="plus">  &#8722  </span></a><br>
-    {% endif %}
-
-
 {% endblock %}
