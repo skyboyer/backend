@@ -29,7 +29,7 @@
                             <td> {{item.name}} </td>
                             <td> {{item.info}} </td>
                             <td> 
-                                {{item.publicdate}}
+                                {{item.publicdate|date('Y-m-d')}}
                             </td>
                             <td><a target="_blanc" href="{{ path('product_edit', {id: item.id}) }}">edit the product</a></td>
                         </tr>

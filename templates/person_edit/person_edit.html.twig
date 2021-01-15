@@ -1,0 +1,44 @@
+{% extends 'base.html.twig' %}   
+
+{% block stylesheets1 %}
+    <link rel="stylesheet" href="/css/person_edit1.css">
+{% endblock %}
+
+{% block content %}           
+
+    <h1>Changing User's Information</h1>     
+
+    <span>You are changing the User with id {{id}}:</span><br>
+    Login: {{login1}}:<br>
+    Name: {{i_name1}}<br>
+    Surname: {{f_name1}}<br>
+    State: {% if state1 == active %} 
+                ACTIVE
+            {% elseif state1 == banned %}
+                BANNED
+            {% else %}
+                DELETED    
+            {% endif %} 
+
+    <br><br>
+    
+    <span>Enter your changes:</span><br>
+    {{form(form)}}
+    <br>
+    
+    {% if save == 'saved' %}
+
+            <span>Changes in product with id {{id}} was saved:</span><br>
+            new Login: {{person.login}}<br>
+            new Name: {{person.iname}}<br>
+            new Surname:{{person.fname}}<br>
+            new State:  {% if person.state == active %} 
+                            ACTIVE
+                        {% elseif person.state == banned %}
+                            BANNED
+                        {% else %}
+                            DELETED    
+                        {% endif %} 
+    {% endif %}
+
+{% endblock %}

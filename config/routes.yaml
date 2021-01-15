@@ -31,3 +31,8 @@ person_edit:
             path: /person/edit/{id}
             controller: App\Controller\PersonEditController::person_edit  
 
+person_delete:
+            path: /person/delete/{id}
+            controller: App\Controller\PersonEditController::person_delete  
+
+

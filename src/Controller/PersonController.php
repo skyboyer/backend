@@ -5,7 +5,7 @@ namespace App\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Form\Extension\Core\Type\NumberType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 
@@ -14,9 +14,9 @@ use Symfony\Component\Form\Form;
 use Symfony\Component\Form\AbstractType;
 
 
-use App\Entity\Product;
-use App\Form\Type\ProductType;
-use App\Repository\ProductRepository;
+use App\Entity\Person;
+use App\Form\Type\PersonType;
+use App\Repository\PersonRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\EntityManagerInterface;
 
@@ -28,96 +28,89 @@ class PersonController extends AbstractController
         
         $form = $this->createFormBuilder()
                     ->setMethod('GET')
-                    ->add('name', TextType::class, ['label'=>'Name:',
+                    ->add('login', TextType::class, ['label'=>'Login (ATTENTION ON REGISTER!):',
                                         'required' => false])
-                    ->add('date_from', DateType::class, ['label'=>'Date from:',
-                                                'required' => false,
-                                                'widget' => 'single_text'])
-                    ->add('date_to', DateType::class, ['label'=>'Date to:',
-                                                'required' => false,
-                                                'widget' => 'single_text'])
-                    ->add('send', SubmitType::class, ['label'=>'Show the chosen products'])
+                    ->add('i_name', TextType::class, ['label'=>'Name:',
+                                                'required' => false])
+                    ->add('f_name', TextType::class, ['label'=>'Family:',
+                                                'required' => false])
+                    ->add('state', ChoiceType::class, ['label'=>'User\'s state',
+                                                    'placeholder'=>"",
+                                                    'required' => false,
+                                                    'choices'=> [
+                                                        'Active' => Person::ACTIVE,
+                                                        'Banned' => Person::BANNED,
+                                                        'Deleted' => Person::DELETED,
+                                                        ],
+                                                    ])
+                    ->add('send', SubmitType::class, ['label'=>'Show the chosen users'])
                     ->getForm();
 
         $form->handleRequest($request);
 
-        function products_dates_to_string ($products) {
-            $i=0;
-            foreach ($products as $product) {
-                
-                $date_object = $product->getPublicDate();
-                $date_string = date_format($date_object, 'Y-m-d');
-                $products[$i]->publicdate = $date_string;
-                $i=$i+1;
-
-            }
-            return ($products);
-        };
-
         if ($form->isSubmitted() ) {
             
             $data = $form->getData();
-            $date_from=$data['date_from'];
-            $date_to=$data['date_to'];
-            $name=$data['name'];
+            $login=$data['login'];
+            $i_name=$data['i_name'];
+            $f_name=$data['f_name'];
+            $state=$data['state'];
 
             $entityManager = $this->getDoctrine()->getManager();
             $queryBuilder = $entityManager->createQueryBuilder()
                                             -> select('p')
-                                            -> from ('App\Entity\Product', 'p')
-                                            -> orderBy('p.public_date', 'ASC');
+                                            
+                                            -> from ('App\Entity\Person', 'p')
+                                            -> orderBy('p.state', 'ASC');
 
-            if (isset($name)) {
-                $queryBuilder= $queryBuilder->setParameter('name', $name)
-                                            -> andWhere('p.name = :name');
+            if (isset($i_name)) {
+                $queryBuilder=$queryBuilder->setParameter('i_name', strtolower($i_name))
+                                            -> andwhere ($queryBuilder->expr()->eq(
+                                                        $queryBuilder-> expr()->lower('p.i_name'), ':i_name') ) ;
             }
 
-            $products = $queryBuilder->getQuery()->getResult();
-
-            $productsFilterByDate = Array();
-            $i=0;
-            foreach ($products as $product) {
-                if (!isset($date_to)) {  
-                    if ( ($product->getPublicDate() >= $date_from) ) {
-                        $productsFilterByDate[$i]=$product;
-                        $i=$i+1;
-                    }   
-                }    
-                else {
-                    if ( ($product->getPublicDate() >= $date_from) and ($product->getPublicDate() <= $date_to) ) {
-                                    
-                        $productsFilterByDate[$i]=$product;
-                        $i=$i+1;
-                    }
-                }
+            if (isset($f_name)) {
+                $queryBuilder=$queryBuilder->setParameter('f_name', strtolower($f_name))
+                                            -> andwhere ( $queryBuilder->expr()->eq(
+                                                          $queryBuilder-> expr()->lower('p.f_name'), ':f_name') ) ;
             }
-            $products=$productsFilterByDate;  
-            
-            $products=products_dates_to_string ($products);
 
-            $contents = $this->renderView('product/product.html.twig',
-                [
-                    'form' => $form->createView(),
-                    'products' => $products,
-                ],
-            );               
+            if (isset($login)) {
+                $queryBuilder= $queryBuilder->setParameter('login', $login)
+                                        -> andWhere('p.login = :login');
+            }
+        
+            if (isset($state)) {
+                $queryBuilder= $queryBuilder->setParameter('state', $state)
+                                            -> andWhere('p.state = :state');
+            }
+
+
+            $persons = $queryBuilder->getQuery()->getResult();
+                            
         }
         else {
 
-           $products = $this->getDoctrine()
-            ->getRepository(Product::class)
-            ->findAll();
-                        
-            $products=products_dates_to_string ($products);
-
-            $contents = $this->renderView('product/product.html.twig', [
-                
-                'form' => $form->createView(),
-                'products' => $products,
-                
-            ]);
+            $entityManager = $this->getDoctrine()->getManager();
+            $queryBuilder = $entityManager->createQueryBuilder()
+                                            -> select('p')
+                                            -> from ('App\Entity\Person', 'p')
+                                            -> orderBy('p.state', 'ASC');
+            $persons = $queryBuilder->getQuery()->getResult();
+                     
         }
-            return new Response ($contents);
-        
+
+        $contents = $this->renderView('person/person.html.twig', [
+                
+            'form' => $form->createView(),
+            'persons' => $persons,
+            
+            'active' => Person::ACTIVE,
+            'banned' => Person::BANNED,
+            'deleted' => Person::DELETED,
+                
+            ] );
+
+        return new Response ($contents);
     }
 }

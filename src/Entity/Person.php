@@ -89,4 +89,18 @@ class Person
 
         return $this;
     }
+
+    public const ACTIVE=1;
+    public const BANNED=2;
+    public const DELETED=3;
+
+    public function getStateString (int $state) : string
+    {
+        if ($state==1) $state_string = 'active';
+        if ($state==2) $state_string = 'banned';
+        if ($state==3) $state_string = 'deleted';
+        
+        return $state_string;
+    }
+
 }

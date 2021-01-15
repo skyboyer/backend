@@ -29,7 +29,7 @@ class PersonAddController extends AbstractController
             $productManager->persist($person);
             $productManager->flush();
             
-            return $this->redirectToRoute('product');
+            return $this->redirectToRoute('person');
         }
         else 
         {

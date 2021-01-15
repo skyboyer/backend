@@ -17,21 +17,13 @@
     <span>Enter your changes:</span><br>
     {{form(form1)}}
         
-    {{form(form2)}}
+    {{form(form2)}}  <br>
     
-    <br>
-    
-    {% if save is defined%}
-
-        {% if save == "saved" %}  
-        
+    {% if save == 'saved' %}
             <span>Changes in product with id {{id}} was saved:</span><br>
-            new Name: {{name1}}<br>
-            new Date: {{date1}}<br>
-            new Information: {{info1}}<br>
-            
-           
-        {% endif %}
+            new Name: {{product.name}}<br>
+            new Date: {{product.publicdate|date('Y-m-d')}}<br>
+            new Information: {{product.info}}<br>
     {% endif %}
     
 {% endblock %}

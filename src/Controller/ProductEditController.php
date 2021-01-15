@@ -22,7 +22,7 @@ class ProductEditController extends AbstractController
     {
         $productManager = $this->getDoctrine()->getManager();
         $product = $productManager->getRepository(Product::class)->find($id);
-
+        
         if ( $product==null ) {
             return $this->redirectToRoute('product');
         }
@@ -45,44 +45,34 @@ class ProductEditController extends AbstractController
             $form1->handleRequest($request);
             $form2->handleRequest($request);
 
+            $save='unsaved';
             if ($form1->isSubmitted()) {
                 $save='saved';
-                
                 $productManager->flush();
-                                        
-                $contents = $this->renderView('product_edit/product_edit.html.twig',
-                    [
-                        'form1' => $form1->createView(),
-                        'form2' => $form2->createView(),
-                        'id'=> $id,
-                        'name1'=> $name1,
-                        'date1'=> $date1,
-                        'info1'=> $info1,
-                        'save'=>$save,
-                ],
-                );
-                return new Response($contents);
+                               
             }
-
-            else if ($form2->isSubmitted()) {
+            elseif ($form2->isSubmitted()) {
                 
                 return $this->redirectToRoute('product_delete', ['id' => $id]);
                 
             }
-            else 
-            {
-                $contents = $this->renderView('product_edit/product_edit.html.twig',
-                        [
-                            'form1' => $form1->createView(),
-                            'form2' => $form2->createView(),
-                            'id'=> $id,
-                            'name1'=> $name1,
-                            'date1'=> $date1,
-                            'info1'=> $info1,
-                        ],
-                    );
+              
+            $contents = $this->renderView('product_edit/product_edit.html.twig',
+                [
+                    'form1' => $form1->createView(),
+                    'form2' => $form2->createView(),
+                    'id'=> $id,
+                    'save' => $save,
+
+                    'product'=> $product,
+                                                   
+                    'name1'=> $name1,
+                    'date1'=> $date1,
+                    'info1'=> $info1,
+
+                ]  );
                 return new Response($contents);
-            }
+            
             
         }
     }

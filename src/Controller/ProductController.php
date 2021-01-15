@@ -8,6 +8,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
+
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\Form;
 use Symfony\Component\Form\AbstractType;
@@ -40,19 +41,6 @@ class ProductController extends AbstractController
 
         $form->handleRequest($request);
 
-        function products_dates_to_string ($products) {
-            $i=0;
-            foreach ($products as $product) {
-                
-                $date_object = $product->getPublicDate();
-                $date_string = date_format($date_object, 'Y-m-d');
-                $products[$i]->publicdate = $date_string;
-                $i=$i+1;
-
-            }
-            return ($products);
-        };
-
         if ($form->isSubmitted() ) {
             
             $data = $form->getData();
@@ -65,11 +53,14 @@ class ProductController extends AbstractController
                                             -> select('p')
                                             -> from ('App\Entity\Product', 'p')
                                             -> orderBy('p.public_date', 'ASC');
+                                            
 
             if (isset($name)) {
-                $queryBuilder= $queryBuilder->setParameter('name', $name)
-                                            -> andWhere('p.name = :name');
+                $queryBuilder=$queryBuilder->setParameter('name', strtolower($name))
+                                            -> add ('where', ($queryBuilder->expr()->eq(
+                                                        $queryBuilder-> expr()->lower('p.name'), ':name') ) );
             }
+                                            
 
             $products = $queryBuilder->getQuery()->getResult();
 
@@ -89,34 +80,24 @@ class ProductController extends AbstractController
                         $i=$i+1;
                     }
                 }
+                $products=$productsFilterByDate;
             }
-            $products=$productsFilterByDate;  
-            
-            $products=products_dates_to_string ($products);
-
-            $contents = $this->renderView('product/product.html.twig',
-                [
-                    'form' => $form->createView(),
-                    'products' => $products,
-                ],
-            );               
+                    
         }
         else {
 
            $products = $this->getDoctrine()
             ->getRepository(Product::class)
             ->findAll();
-                        
-            $products=products_dates_to_string ($products);
-
-            $contents = $this->renderView('product/product.html.twig', [
+        }                
+        
+        $contents = $this->renderView('product/product.html.twig', [
                 
-                'form' => $form->createView(),
-                'products' => $products,
+            'form' => $form->createView(),
+            'products' => $products,
                 
             ]);
-        }
-            return new Response ($contents);
+        return new Response ($contents);
         
     }
 }
