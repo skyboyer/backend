@@ -21,12 +21,12 @@ class ProductType extends AbstractType
         $builder
             ->add('name', TextType::class, ['label'=>'Name:'])
             ->add('info', TextareaType::class, ['label'=>'Product information:'])
-            //->add('public_date', DateType::class, [
-            //                    'label'=>'Date of publication'
+            /*->add('public_date', DateType::class, [
+                                'label'=>'Date of publication'
                                 
                                 
                                 
-            //                    ])
+                                ])  */
         ;   
     }
 

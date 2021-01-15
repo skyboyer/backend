@@ -58,7 +58,6 @@ class ProductEditController extends AbstractController
                         'name1'=> $name1,
                         'date1'=> $date1,
                         'info1'=> $info1,
-                        //'product' => $product,
                         'save'=>$save,
                 ],
                 );
@@ -80,7 +79,6 @@ class ProductEditController extends AbstractController
                             'name1'=> $name1,
                             'date1'=> $date1,
                             'info1'=> $info1,
-                            //'product' => $product,
                         ],
                     );
                 return new Response($contents);

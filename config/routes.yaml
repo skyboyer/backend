@@ -18,3 +18,16 @@ product_edit:
 product_delete:
             path: /products/delete/{id}
             controller: App\Controller\ProductEditController::product_delete
+
+person:
+            path: /person
+            controller: App\Controller\PersonController::person
+
+person_add:
+            path: /person/add
+            controller: App\Controller\PersonAddController::person_add
+
+person_edit:
+            path: /person/edit/{id}
+            controller: App\Controller\PersonEditController::person_edit  
+
