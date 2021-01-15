@@ -96,7 +96,7 @@ class Person
 
     public function getStateString () : string
     {
-        if ($this->getState()==Person::ACTIVE) $state_string = ACTIVE;
+        if ($this->getState()==Person::ACTIVE) $state_string = 'ACTIVE';
         if ($this->getState()==Person::BANNED) $state_string = 'BANNED';
         if ($this->getState()==Person::DELETED) $state_string = 'DELETED';
         

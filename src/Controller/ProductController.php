@@ -35,7 +35,13 @@ class ProductController extends AbstractController
                                                 'widget' => 'single_text'])
                     ->add('date_to', DateType::class, ['label'=>'Date to:',
                                                 'required' => false,
-                                                'widget' => 'single_text'])
+                                                'widget' => 'single_text',
+                                                'html5' => false,
+                                                'attr' => ['class' => 'js-datepicker']
+                                                
+                                                
+                                                
+                                                ])
                     ->add('send', SubmitType::class, ['label'=>'Show the chosen products'])
                     ->getForm();
 
@@ -55,35 +61,27 @@ class ProductController extends AbstractController
                                             -> orderBy('p.public_date', 'ASC');
                                             
 
+            if (isset($date_from) ) {
+                $date_from->modify('-1 second');
+                $queryBuilder=$queryBuilder->setParameter('date_from', $date_from)
+                                            ->andwhere ('p.public_date > :date_from');
+            }
+                                           
+            if (isset($date_to) ) {
+                $queryBuilder=$queryBuilder->setParameter('date_to', $date_to)
+                                            ->andwhere ('p.public_date<= :date_to');
+            }
+            
             if (isset($name)) {
                 $queryBuilder=$queryBuilder->setParameter('name', strtolower($name))
-                                            -> add ('where', ($queryBuilder->expr()->eq(
-                                                        $queryBuilder-> expr()->lower('p.name'), ':name') ) );
+                                            ->andwhere ($queryBuilder->expr()->eq(
+                                                       $queryBuilder-> expr()->lower('p.name'), ':name') ) ;
             }
-                                            
-
+   
             $products = $queryBuilder->getQuery()->getResult();
-
-            $productsFilterByDate = Array();
-            $i=0;
-            foreach ($products as $product) {
-                if (!isset($date_to)) {  
-                    if ( ($product->getPublicDate() >= $date_from) ) {
-                        $productsFilterByDate[$i]=$product;
-                        $i=$i+1;
-                    }   
-                }    
-                else {
-                    if ( ($product->getPublicDate() >= $date_from) and ($product->getPublicDate() <= $date_to) ) {
-                                    
-                        $productsFilterByDate[$i]=$product;
-                        $i=$i+1;
-                    }
-                }
-                $products=$productsFilterByDate;
-            }
-                    
+ 
         }
+
         else {
 
            $products = $this->getDoctrine()
