@@ -1,0 +1,65 @@
+{% extends 'base.html.twig' %}
+
+{% block stylesheets1 %}
+    <link rel="stylesheet" href="/css/person_like_product.css">
+{% endblock %}
+
+{% block content %}  
+    
+    <div id='form_person'>
+        <h1>Find Users Likes:</h1>
+        
+        {{ form_start(form_person, {'attr': {'novalidate': 'novalidate'}} ) }}
+            
+            {{ form_widget(form_person) }}
+
+        {{ form_end(form_person) }}
+    </div>
+
+    <div id='form_product'>
+        <h1>Find Products lovers:</h1>
+        {{ form(form_product) }}
+    </div>
+    <div style='clear:both'></div>
+
+    <button type="button"><a class="button" href="{{ path('person_like_product') }}">RESET</a></button>
+    <br>
+    {#<button type="button" id="addbutton"><a class="button" target="_blanc" href="{{ path('person_add') }}">Add new user</a></button>#}
+
+    {% if match == 0 %}
+
+    {% elseif match == 1 and products is not empty %} 
+        <table>
+            <tr>
+                <th>Name</th><th>Info</th><th>Public date</th>
+            </tr>
+                
+            {% for product in products %} 
+                <tr>
+                    <td>{{product.name}}</td><td>{{product.info}}</td><td>{{product.publicdate|date('Y-m-d')}}</td>
+                </tr>
+            {% endfor %}   
+        </table> 
+    
+    {% elseif  match == 2 and persons is not empty %}
+        <table>
+            <tr>
+                <th>Login</th><th>Name</th><th>Surname</th><th>State</th>
+            </tr>
+            
+            {% for person in persons %} 
+                    <tr>
+                        <td>{{person.login}}</td>
+                        <td>{{person.iname}}</td>
+                        <td>{{person.fname}} </td>
+                        <td>{{person.getStateString }}</td>
+                    </tr>
+            {% endfor %}   
+        </table>
+    
+    {% else %}
+        No match!
+    {% endif %}  
+
+{% endblock %}  
+

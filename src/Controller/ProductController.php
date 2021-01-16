@@ -35,13 +35,7 @@ class ProductController extends AbstractController
                                                 'widget' => 'single_text'])
                     ->add('date_to', DateType::class, ['label'=>'Date to:',
                                                 'required' => false,
-                                                'widget' => 'single_text',
-                                                'html5' => false,
-                                                'attr' => ['class' => 'js-datepicker']
-                                                
-                                                
-                                                
-                                                ])
+                                                'widget' => 'single_text'])
                     ->add('send', SubmitType::class, ['label'=>'Show the chosen products'])
                     ->getForm();
 
@@ -64,7 +58,7 @@ class ProductController extends AbstractController
             if (isset($date_from) ) {
                 $date_from->modify('-1 second');
                 $queryBuilder=$queryBuilder->setParameter('date_from', $date_from)
-                                            ->andwhere ('p.public_date > :date_from');
+                                            ->andwhere ('p.public_date >= :date_from');
             }
                                            
             if (isset($date_to) ) {

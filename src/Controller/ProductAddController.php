@@ -36,9 +36,7 @@ class ProductAddController extends AbstractController
         $form->handleRequest($request);
        
         if ($form->isSubmitted()) {
-
-            
-                               
+                 
             $productManager = $this->getDoctrine()->getManager();
             $productManager->persist($product);
             $productManager->flush();
