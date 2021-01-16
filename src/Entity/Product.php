@@ -40,6 +40,16 @@ class Product
      */
     private $public_date;
 
+    /**
+     * @ORM\OneToMany(targetEntity=PersonLikeProduct::class, mappedBy="product")
+     */
+    private $ProductHavePersons;
+
+    public function __construct()
+    {
+        $this->ProductHavePersons = new ArrayCollection();
+    }
+
     public function getId(): ?int
     {
         return $this->id;
@@ -77,6 +87,36 @@ class Product
     public function setPublicDate(\DateTimeInterface $public_date): self
     {
         $this->public_date = $public_date;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|PersonLikeProduct[]
+     */
+    public function getProductHavePersons(): Collection
+    {
+        return $this->ProductHavePersons;
+    }
+
+    public function addProductHavePerson(PersonLikeProduct $productHavePerson): self
+    {
+        if (!$this->ProductHavePersons->contains($productHavePerson)) {
+            $this->ProductHavePersons[] = $productHavePerson;
+            $productHavePerson->setProduct($this);
+        }
+
+        return $this;
+    }
+
+    public function removeProductHavePerson(PersonLikeProduct $productHavePerson): self
+    {
+        if ($this->ProductHavePersons->removeElement($productHavePerson)) {
+            // set the owning side to null (unless already changed)
+            if ($productHavePerson->getProduct() === $this) {
+                $productHavePerson->setProduct(null);
+            }
+        }
 
         return $this;
     }

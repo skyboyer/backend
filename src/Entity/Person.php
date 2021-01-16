@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\PersonRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -36,6 +38,16 @@ class Person
      * @ORM\Column(type="smallint")
      */
     private $state;
+
+    /**
+     * @ORM\OneToMany(targetEntity=PersonLikeProduct::class, mappedBy="person")
+     */
+    private $PersonHaveProducts;
+
+    public function __construct()
+    {
+        $this->PersonHaveProducts = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -101,6 +113,36 @@ class Person
         if ($this->getState()==Person::DELETED) $state_string = 'DELETED';
         
         return $state_string;
+    }
+
+    /**
+     * @return Collection|PersonLikeProduct[]
+     */
+    public function getPersonHaveProducts(): Collection
+    {
+        return $this->PersonHaveProducts;
+    }
+
+    public function addPersonHaveProduct(PersonLikeProduct $personHaveProduct): self
+    {
+        if (!$this->PersonHaveProducts->contains($personHaveProduct)) {
+            $this->PersonHaveProducts[] = $personHaveProduct;
+            $personHaveProduct->setPerson($this);
+        }
+
+        return $this;
+    }
+
+    public function removePersonHaveProduct(PersonLikeProduct $personHaveProduct): self
+    {
+        if ($this->PersonHaveProducts->removeElement($personHaveProduct)) {
+            // set the owning side to null (unless already changed)
+            if ($personHaveProduct->getPerson() === $this) {
+                $personHaveProduct->setPerson(null);
+            }
+        }
+
+        return $this;
     }
 
 }
