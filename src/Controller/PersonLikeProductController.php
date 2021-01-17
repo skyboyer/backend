@@ -47,12 +47,14 @@ class PersonLikeProductController extends AbstractController
                                     'label'=>'Name:',
                                     'class'=> Person::class,
                                     'choice_label' => 'i_name',
-                                    'required' => false ])
+                                    'required' => false,
+                                    'mapped' => false])
                     ->add('f_name', EntityType::class, [
                                     'label'=>'Surname:',
                                     'class'=> Person::class,
                                     'choice_label' => 'f_name',
-                                    'required' => false])
+                                    'required' => false,
+                                    'mapped' => false])
                     ->add('send', SubmitType::class, ['label'=>'Show users\' preferencies']);
                     
 

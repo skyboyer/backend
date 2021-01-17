@@ -15,7 +15,7 @@ class Person
     /**
      * @ORM\Id
      * @ORM\GeneratedValue
-     * @ORM\Column(type="integer")
+     * @ORM\Column(type="integer", options = {"unsigned":true})
      */
     private $id;
 
@@ -35,7 +35,7 @@ class Person
     private $f_name;
 
     /**
-     * @ORM\Column(type="smallint")
+     * @ORM\Column(type="smallint", options = {"unsigned":true} )
      */
     private $state;
 
