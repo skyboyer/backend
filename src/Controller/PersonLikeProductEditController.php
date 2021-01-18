@@ -206,7 +206,6 @@ class PersonLikeProductEditController extends AbstractController
                 'persons' => $persons,
                 'date_from' => $date_from,
                 'date_to' => $date_to,
-
                 'name' => $name,
                                
                 'persontHaveProducts'=>$personHaveProducts,

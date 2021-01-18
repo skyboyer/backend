@@ -81,6 +81,8 @@ class PersonLikeProductController extends AbstractController
         $match=0;
         $products=array();
         $persons=array();
+        $productHavePersons = array();
+        $productHavePersons = array();
         
         if ($form_person->isSubmitted() ) {
             $personManager = $this->getDoctrine()->getManager(); //проверить надо ли эта часть!!
@@ -145,14 +147,22 @@ class PersonLikeProductController extends AbstractController
                 'i_name' => $i_name,
                 'f_name' => $f_name,
                 'state' => $state,
-    
                 'productHavePersons'=>$productHavePersons
                     
             ]);
-
-                                      
         }
-        
+        else {
+            $contents = $this->renderView('person_like_product/person_like_product.html.twig', [
+                    
+                'form_person' => $form_person->createView(),
+                'form_product' => $form_product->createView(),
+                'match'=>$match,
+                'products' => $products,
+                'persons' => $persons,
+                
+            ]);
+        }
+
         if ($form_product->isSubmitted() ) {
             
             $data = $form_product->getData();
@@ -204,29 +214,17 @@ class PersonLikeProductController extends AbstractController
                 'match'=>$match,
                 'products' => $products,
                 'persons' => $persons,
+                
                 'date_from' => $date_from,
                 'date_to' => $date_to,
-
                 'name' => $name,
-                               
                 'persontHaveProducts'=>$personHaveProducts,
                     
             ]);
 
             
         } 
-        else {
-            $contents = $this->renderView('person_like_product/person_like_product.html.twig', [
-                    
-                'form_person' => $form_person->createView(),
-                'form_product' => $form_product->createView(),
-                'match'=>$match,
-                'products' => $products,
-                'persons' => $persons,            
-                    
-            ]);
-        }
-               
+                     
         return new Response ($contents);
         
     }
