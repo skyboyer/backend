@@ -38,6 +38,10 @@ person_delete:
 person_like_product:
             path: /person/like/product
             controller: App\Controller\PersonLikeProductController::person_like_product
+
+person_like_product_edit:
+            path: /person/like/product/edit/{id}/{match}
+            controller: App\Controller\PersonLikeProductEditController::person_like_product_edit
             
             
 

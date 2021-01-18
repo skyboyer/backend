@@ -7,12 +7,11 @@
 {% block content %}  
     
     <div id='form_person'>
-        <h1>Find Users Likes:</h1>
+        <h1>Find Users Likes</h1>
+        Choose filters for users:<br><br>
         
         {{ form_start(form_person, {'attr': {'novalidate': 'novalidate'}} ) }}
-            
             {{ form_widget(form_person) }}
-
         {{ form_end(form_person) }}
     </div>
 
@@ -22,41 +21,62 @@
     </div>
     <div style='clear:both'></div>
 
-    <button type="button"><a class="button" href="{{ path('person_like_product') }}">RESET</a></button>
-    <br>
+    <button type="button"><a class="button" href="{{ path('person_like_product') }}">RESET</a></button><br>
     {#<button type="button" id="addbutton"><a class="button" target="_blanc" href="{{ path('person_add') }}">Add new user</a></button>#}
 
     {% if match == 0 %}
-
     {% elseif match == 1 and products is not empty %} 
-        <table>
-            <tr>
-                <th>Name</th><th>Info</th><th>Public date</th>
-            </tr>
-                
-            {% for product in products %} 
+        <h1>Chosen users:</h1>
+            Login: {% if login is defined %} {{login}}, {% else %} all, {% endif %} <br>  
+            Name: {% if i_name is defined %} {{i_name}}, {% else %} all, {% endif %} <br>  
+            Surname:{% if f_name is defined %} {{f_name}}, {% else %} all, {% endif %} <br> 
+            State:{% if state is defined %} {{state}}. {% else %} all. {% endif %}.
+
+        <h1>Products, which these users like:</h1>
+            <table>
                 <tr>
-                    <td>{{product.name}}</td><td>{{product.info}}</td><td>{{product.publicdate|date('Y-m-d')}}</td>
+                    <th>Name of the product</th> <th>Info</th> <th>Publication date</th> <th>Who likes the product </th> 
                 </tr>
-            {% endfor %}   
-        </table> 
-    
-    {% elseif  match == 2 and persons is not empty %}
-        <table>
-            <tr>
-                <th>Login</th><th>Name</th><th>Surname</th><th>State</th>
-            </tr>
-            
-            {% for person in persons %} 
+                    
+                {% for product in products %} 
                     <tr>
-                        <td>{{person.login}}</td>
-                        <td>{{person.iname}}</td>
-                        <td>{{person.fname}} </td>
-                        <td>{{person.getStateString }}</td>
+                        <td>{{product.name}} <a target="_blanc" href="{{ path('person_like_product_edit', {id: product.id, match: match}) }}">edit the product's lovers</a> </td> <td>{{product.info}}</td> <td>{{product.publicdate|date('Y-m-d')}}</td> 
+                        <td>
+                            {% for prodpers in product.getProductHavePersons %}
+                                {{ prodpers.getPerson.getIName }}  {{ prodpers.getPerson.getFName }}<br>
+                            {% endfor %}   
+                        </td>
                     </tr>
-            {% endfor %}   
-        </table>
-    
+                {% endfor %}   
+            </table> 
+
+    {% elseif  match == 2 and persons is not empty %}
+        <h1>Chosen products:</h1>
+            Name: {% if name is defined %} {{name}}, {% else %} all, {% endif %} <br>  
+            Public date from:{% if date_from is not null %} {{date_from|date('Y-m-d')}}, {% else %} all, {% endif %} <br> 
+            Public date to: {% if date_to is not null %} {{date_to|date('Y-m-d')}}. {% else %} all. {% endif %}
+
+            <h1>Users, which love these products:</h1>
+            <table>
+                <tr>
+                    <th>Login</th><th>Name</th><th>Surname</th><th>State</th> <th>Products, which this user likes </th> 
+                </tr>
+                
+                {% for person in persons %} 
+                        <tr>
+                            <td>{{person.login}}</td>
+                            <td>{{person.iname}}</td>
+                            <td>{{person.fname}} </td>
+                            <td>{{person.getStateString }}</td>
+                            <td>
+                                {% for persprod in person.getPersonHaveProducts %}
+                                    {{ persprod.getProduct.getName }} <br>
+                                {% endfor %}   
+                            </td>
+                        </tr>
+                {% endfor %}   
+            </table>
+        
     {% else %}
         No match!
     {% endif %}  

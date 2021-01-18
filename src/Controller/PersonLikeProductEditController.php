@@ -31,9 +31,9 @@ use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\EntityManagerInterface;
 
 
-class PersonLikeProductController extends AbstractController
+class PersonLikeProductEditController extends AbstractController
 {
-    public function person_like_product(Request $request) : Response
+    public function person_like_product_edit(Request $request, $id, $match) : Response
     {   
         $person = new Person();
         $form_person = $this->createForm (PersonType::class, $person,['method' => 'GET'])
