@@ -43,7 +43,7 @@ td, th {
 	border-collapse: collapse;
 	padding: 5px;
 }
-#form_person {
+#person {
 	float:left;
 	padding: 25px;
 }
@@ -51,6 +51,11 @@ td, th {
 	float:left;
 	padding: 25px;
 }
-
+span {
+	color:red;
+	font-weight: bold;
+	font-size: 200%;
+	text-align: center;
+}
 
 

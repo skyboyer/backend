@@ -1,85 +1,59 @@
 {% extends 'base.html.twig' %}
 
 {% block stylesheets1 %}
-    <link rel="stylesheet" href="/css/person_like_product.css">
+    <link rel="stylesheet" href="/css/person_like_product_edit1.css">
 {% endblock %}
 
 {% block content %}  
     
-    <div id='form_person'>
-        <h1>Find Users Likes</h1>
-        Choose filters for users:<br><br>
+    <div id='person'>
+        <h1>User:</h1>
+            Login: {{ person.login }}, <br>  
+            Name: {{ person.iname }}, <br>  
+            Surname: {{ person.fname }}, <br> 
+            State: {{ person.getStateString }}.
         
-        {{ form_start(form_person, {'attr': {'novalidate': 'novalidate'}} ) }}
-            {{ form_widget(form_person) }}
-        {{ form_end(form_person) }}
+        <h1>Products, which this user likes:</h1>
+        <table>
+            <tr>
+                <th>Name of the product</th> <th>Info</th> <th>Publication date</th> <th>UNLIKE</th> 
+                        
+                {% for persprod in person.getPersonHaveProducts %}
+                    <tr>
+                        <td>{{persprod.getProduct.getName }}</td>
+                        <td>{{persprod.getProduct.getInfo}}</td>
+                        <td>{{persprod.getProduct.getpublicdate|date('Y-m-d')}}</td>
+                        <td> <span class="minus"> &#8722   </span> </td> 
+                    </tr>
+                {% endfor %} 
+            
+             
+        </table> 
     </div>
 
     <div id='form_product'>
-        <h1>Find Products lovers:</h1>
-        Choose filters for products:<br><br>
+
+        <h1>Choose products to like:</h1>
+        
         {{ form(form_product) }}
-    </div>
-    <div style='clear:both'></div>
 
-    <button type="button"><a class="button" href="{{ path('person_like_product') }}">RESET</a></button><br>
-    {#<button type="button" id="addbutton"><a class="button" target="_blanc" href="{{ path('person_add') }}">Add new user</a></button>#}
-
-    {% if match == 0 %}
-    {% elseif match == 1 and products is not empty %} 
-        <h1>Chosen users:</h1>
-            Login: {% if login is  not null %} {{login}}, {% else %} all, {% endif %} <br>  
-            Name: {% if i_name is  not null %} {{i_name}}, {% else %} all, {% endif %} <br>  
-            Surname:{% if f_name is  not null %} {{f_name}}, {% else %} all, {% endif %} <br> 
-            State:{% if state is not null %} {{state}}. {% else %} all. {% endif %}
-
-        <h1>Products, which these users like:</h1>
+        <h1>Choose new like:</h1>
             <table>
                 <tr>
-                    <th>Name of the product</th> <th>Info</th> <th>Publication date</th> <th>Who likes the product </th> 
+                    <th>Name of the product</th> <th>Info</th> <th>Publication date</th> <th>LIKE</th>
                 </tr>
                     
                 {% for product in products %} 
                     <tr>
-                        <td>{{product.name}} <a target="_blanc" href="{{ path('person_like_product_edit', {id: product.id, match: match}) }}">edit the product's lovers</a> </td> <td>{{product.info}}</td> <td>{{product.publicdate|date('Y-m-d')}}</td> 
-                        <td>
-                            {% for prodpers in product.getProductHavePersons %}
-                                {{ prodpers.getPerson.getIName }}  {{ prodpers.getPerson.getFName }}<br>
-                            {% endfor %}   
-                        </td>
+                        <td>{{product.name}} </td>
+                        <td>{{product.info}}</td>
+                        <td>{{product.publicdate|date('Y-m-d')}}</td>
+                        <td> <span class="minus"> +  </span> </td> 
                     </tr>
                 {% endfor %}   
             </table> 
-
-    {% elseif  match == 2 and persons is not empty %}
-        <h1>Chosen products:</h1>
-            Name: {% if name is not null %} {{name}}, {% else %} all, {% endif %} <br>  
-            Public date from:{% if date_from is not null %} {{date_from|date('Y-m-d')}}, {% else %} all, {% endif %} <br> 
-            Public date to: {% if date_to is not null %} {{date_to|date('Y-m-d')}}. {% else %} all. {% endif %}
-
-            <h1>Users, which love these products:</h1>
-            <table>
-                <tr>
-                    <th>Login</th><th>Name, Surname</th><th>State</th> <th>Products, which this user likes </th> 
-                </tr>
-                
-                {% for person in persons %} 
-                        <tr>
-                            <td>{{person.login}}</td>
-                            <td>{{person.iname}} {{person.fname}} <a target="_blanc" href="{{ path('person_like_product_edit', {id: person.id, match: match}) }}">edit user's likes</a> </td>
-                            <td>{{person.getStateString }}</td>
-                            <td>
-                                {% for persprod in person.getPersonHaveProducts %}
-                                    {{ persprod.getProduct.getName }} <br>
-                                {% endfor %}   
-                            </td>
-                        </tr>
-                {% endfor %}   
-            </table>
-        
-    {% else %}
-        No match!
-    {% endif %}  
+    </div>
+    <div style='clear:both'></div>
 
 {% endblock %}  
 
