@@ -40,7 +40,7 @@ person_like_product:
             controller: App\Controller\PersonLikeProductController::person_like_product
 
 person_like_product_edit:
-            path: /person/like/product/edit/{id_person}/{match}
+            path: /person/like/product/edit/{id_person}
             controller: App\Controller\PersonLikeProductEditController::person_like_product_edit
 
 person_like_product_add:

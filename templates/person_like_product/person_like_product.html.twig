@@ -23,8 +23,7 @@
     <div style='clear:both'></div>
 
     <button type="button"><a class="button" href="{{ path('person_like_product') }}">RESET</a></button><br>
-    {#<button type="button" id="addbutton"><a class="button" target="_blanc" href="{{ path('person_add') }}">Add new user</a></button>#}
-
+    
     {% if match == 0 %}
     {% elseif match == 1 and products is not empty %} 
         <h1>Chosen users:</h1>
@@ -66,7 +65,7 @@
                 {% for person in persons %} 
                         <tr>
                             <td>{{person.login}}</td>
-                            <td>{{person.iname}} {{person.fname}} <a target="_blanc" href="{{ path('person_like_product_edit', {id_person: person.id, match: match}) }}">edit user's likes</a> </td>
+                            <td>{{person.iname}} {{person.fname}} <a href="{{ path('person_like_product_edit', {id_person: person.id}) }}">edit user's likes</a> </td>
                             <td>{{person.getStateString }}</td>
                             <td>
                                 {% for persprod in person.getPersonHaveProducts %}

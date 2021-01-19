@@ -33,7 +33,7 @@ use Doctrine\ORM\EntityManagerInterface;
 
 class PersonLikeProductEditController extends AbstractController
 {
-    public function person_like_product_edit(Request $request, $id_person, $match) : Response
+    public function person_like_product_edit(Request $request, $id_person) : Response
     {   
         $personManager = $this->getDoctrine()->getManager();
         $person = $personManager->getRepository(Person::class)->find($id_person);
@@ -60,7 +60,6 @@ class PersonLikeProductEditController extends AbstractController
         
         
         $products=array();
-            
         if ($form_product->isSubmitted() ) {
             
             $data = $form_product->getData();
@@ -103,7 +102,6 @@ class PersonLikeProductEditController extends AbstractController
             $contents = $this->renderView('person_like_product_edit/person_like_product_edit.html.twig', [
                 
                 'form_product' => $form_product->createView(),
-                'match'=>$match,
                 'products' => $products,
                 'person' => $person,
 
@@ -121,7 +119,6 @@ class PersonLikeProductEditController extends AbstractController
             $contents = $this->renderView('person_like_product_edit/person_like_product_edit.html.twig', [
                     
                 'form_product' => $form_product->createView(),
-                'match'=>$match,
                 'products' => $products,
                 'person' => $person,          
                     
@@ -131,28 +128,34 @@ class PersonLikeProductEditController extends AbstractController
         return new Response ($contents);
     }    
 
-    public function person_like_roduct_add ($id_person, $id_product)
+    public function person_like_product_add ($id_person, $id_product)
     {
-        $productManager = $this->getDoctrine()->getManager();
-        $product = $productManager->getRepository(PersonLikeProduct::class)
-                                    ->findBY($id);
+        $personLikeProductManager = $this->getDoctrine()->getManager();
+        $personLikeProduct = $productManager->getRepository(PersonLikeProduct::class)
+                                                ->findBy ([
+                                                    'id_person' => $id_person, 
+                                                    'id_product' => $id_product 
+                                                ]);
             
-        $productManager->remove($product);
+        $productManager->remove($personLikeProduct);
         $productManager->flush();
     
-        return $this->redirectToRoute('person_like_productedit');
+        return $this->redirectToRoute('person_like_product_edit');
     }
 
-    public function person_like_roduct_remove ($id_person, $id_product)
+    public function person_like_product_delete ($id_person, $id_product)
     {
-        $productManager = $this->getDoctrine()->getManager();
-        $product = $productManager->getRepository(PersonLikeProduct::class)
-                                    ->findBy($id);
+        $personLikeProductManager = $this->getDoctrine()->getManager();
+        $personLikeProduct = $this->getDoctrine()->getRepository(PersonLikeProduct::class)
+                                                ->findBy ([
+                                                    'person' => $id_person, 
+                                                    'product' => $id_product 
+                                                ]);
             
-        $productManager->remove($product);
-        $productManager->flush();
+        $personLikeProductManager->remove($personLikeProduct[0]);
+        $personLikeProductManager->flush();
     
-        return $this->redirectToRoute('person_like_productedit');
+        return $this->redirectToRoute( 'person_like_product_edit', array ('id_person'=> $id_person));
     }
         
         
