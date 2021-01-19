@@ -1,0 +1,75 @@
+{% extends 'base.html.twig' %}
+
+{% block stylesheets1 %}
+    <link rel="stylesheet" href="/css/person_like_product_edit.css">
+{% endblock %}
+
+{% block content %}  
+    
+    <div id='person'>
+        <h1>Product:</h1>
+            Name: {{ product.name }}, <br> 
+            Info: {{ product.info }}, <br> 
+            Publication date: {{ product.publicdate|date('Y-m-d') }}. <br>  
+            
+        
+        <h1>Persons, which loved this product:</h1>
+        <table>
+            <tr>
+                <th>Login</th> <th>Name</th> <th>Surname</th> <th>State</th><th>UNLOVE</th> 
+                        
+                {% for personLoved in personsLoved  %}
+                    <tr>
+                        <td>{{personLoved.getLogin }}</td>
+                        <td>{{personLoved.getIName }}</td>
+                        <td>{{personLoved.getFName}}</td>
+                        <td>{{personLoved.getStateString}}</td>
+                        <td>  <a class="button" href="{{ path('product_like_person_delete', {id_product: product.id, id_person: personLoved.getId }) }}"><span> &#8722   </span> </a> </td> 
+                    </tr>
+                {% endfor %} 
+            
+             
+        </table> 
+    </div>
+
+    <div id='form_product'>
+
+        <h1>Choose persons to love:</h1>
+        
+        {{ form(form_person) }}
+
+        <button type="button"><a class="button" href="{{ path('product_like_person_edit', {id_product: product.id}) }}">RESET</a></button><br>
+
+        {% if persons is not empty  %}
+            <h1>Choose new love:</h1>
+           
+            <table>
+                <tr>
+                    <th>Login</th> <th>Name</th> <th>Surname</th> <th>State</th><th>LOVE</th> 
+                </tr>
+                
+                        {% for person in persons %} 
+                            <tr>
+                                    
+                                <td>{{person.login }}</td>
+                                <td>{{person.iname }}</td>
+                                <td>{{person.fname}}</td>
+                                <td>{{person.getStateString}}</td>
+                                    <td>                              
+                                        {% if person in personsLoved %}
+                                                Already loved!
+                                            {% else %}
+                                                <a class="button" href="{{ path('product_like_person_add', {id_product: product.id, id_person: person.id}) }}"> <span> +  </span> </a> 
+                                        {% endif %}
+                                    </td> 
+                            </tr>
+                        {% endfor %}
+                        
+            </table>
+
+        {% endif %}
+    </div>
+    <div style='clear:both'></div>
+
+{% endblock %}  
+

@@ -43,7 +43,7 @@ class PersonLikeProductEditController extends AbstractController
     }
 
 
-    public function person_like_product_edit(Request $request, $id_person, $exist) : Response
+    public function person_like_product_edit(Request $request, $id_person) : Response
     {   
         $personManager = $this->getDoctrine()->getManager();
         $person = $personManager->getRepository(Person::class)->find($id_person);
@@ -133,8 +133,6 @@ class PersonLikeProductEditController extends AbstractController
                 'date_to' => $date_to,
                 'name' => $name,
                 
-                'exist' => $exist,
-
                 'productsLiked' => $productsLiked,
                     
             ]);
@@ -183,12 +181,7 @@ class PersonLikeProductEditController extends AbstractController
             $request= Request::createFromGlobals();
             $requestForm=$this->session->get('sessionForm'); 
         }
-        else {
-            $exist=1;
-            return $this->redirectToRoute( 'person_like_product_edit', ['id_person'=> $id_person, 'exist' => $exist,
-            'form'=>$requestForm]);
-        }
-
+       
         return $this->redirectToRoute( 'person_like_product_edit', ['id_person'=> $id_person,
                                                                     'form'=>$requestForm]);
     }

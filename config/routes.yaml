@@ -40,8 +40,7 @@ person_like_product:
             controller: App\Controller\PersonLikeProductController::person_like_product
 
 person_like_product_edit:
-            path: /person/like/product/edit/{id_person}/{exist}
-            defaults: {exist: 0}
+            path: /person/like/product/edit/{id_person}
             controller: App\Controller\PersonLikeProductEditController::person_like_product_edit
 
 person_like_product_add:
@@ -51,6 +50,18 @@ person_like_product_add:
 person_like_product_delete:
             path: /person/like/product/delete/{id_person}/{id_product}
             controller: App\Controller\PersonLikeProductEditController::person_like_product_delete
+
+product_like_person_edit:
+            path: /product/like/person/edit/{id_product}
+            controller: App\Controller\ProductLikePersonEditController::product_like_person_edit
+
+product_like_person_add:
+            path: /product/like/person/add/{id_product}/{id_person}
+            controller: App\Controller\ProductLikePersonEditController::product_like_person_add
+
+product_like_person_delete:
+            path: /product/like/person/delete/{id_product}/{id_person}
+            controller: App\Controller\ProductLikePersonEditController::product_like_person_delete
             
             
 
