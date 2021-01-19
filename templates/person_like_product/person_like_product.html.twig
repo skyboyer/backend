@@ -41,7 +41,7 @@
                     
                 {% for product in products %} 
                     <tr>
-                        <td>{{product.name}} <a target="_blanc" href="{{ path('person_like_product_edit', {id_product: product.id, match: match}) }}">edit the product's lovers</a> </td> <td>{{product.info}}</td> <td>{{product.publicdate|date('Y-m-d')}}</td> 
+                        <td>{{product.name}} {#<a target="_blanc" href="{{ path('person_like_product_edit', {id_product: product.id, match: match}) }}">#}edit the product's lovers>>{#</a>#} </td> <td>{{product.info}}</td> <td>{{product.publicdate|date('Y-m-d')}}</td> 
                         <td>
                             {% for prodpers in product.getProductHavePersons %}
                                 {{ prodpers.getPerson.getIName }}  {{ prodpers.getPerson.getFName }}<br>

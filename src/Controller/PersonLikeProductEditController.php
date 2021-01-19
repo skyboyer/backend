@@ -58,7 +58,7 @@ class PersonLikeProductEditController extends AbstractController
 
         $form_product->handleRequest($request);
         
-        $match=0;
+        
         $products=array();
             
         if ($form_product->isSubmitted() ) {
@@ -97,7 +97,7 @@ class PersonLikeProductEditController extends AbstractController
 
             $products = $queryBuilder->getQuery()->getResult();
             
-            $match=2;
+            
             if (isset($date_from) ) $date_from->modify('+1 second');
 
             $contents = $this->renderView('person_like_product_edit/person_like_product_edit.html.twig', [
@@ -129,6 +129,32 @@ class PersonLikeProductEditController extends AbstractController
         }
                
         return new Response ($contents);
-        
+    }    
+
+    public function person_like_roduct_add ($id_person, $id_product)
+    {
+        $productManager = $this->getDoctrine()->getManager();
+        $product = $productManager->getRepository(PersonLikeProduct::class)
+                                    ->findBY($id);
+            
+        $productManager->remove($product);
+        $productManager->flush();
+    
+        return $this->redirectToRoute('person_like_productedit');
     }
+
+    public function person_like_roduct_remove ($id_person, $id_product)
+    {
+        $productManager = $this->getDoctrine()->getManager();
+        $product = $productManager->getRepository(PersonLikeProduct::class)
+                                    ->findBy($id);
+            
+        $productManager->remove($product);
+        $productManager->flush();
+    
+        return $this->redirectToRoute('person_like_productedit');
+    }
+        
+        
 }
+

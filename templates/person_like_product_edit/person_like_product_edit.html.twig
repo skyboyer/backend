@@ -48,7 +48,7 @@
                         <td>{{product.name}} </td>
                         <td>{{product.info}}</td>
                         <td>{{product.publicdate|date('Y-m-d')}}</td>
-                        <td> <span class="minus"> +  </span> </td> 
+                        <td> <a class="button" href="{{ path('person_like_product_add', {id_person: person.id, id_product: product.id}) }}"> </a><span class="minus"> +  </span> </a> </td> 
                     </tr>
                 {% endfor %}   
             </table> 
