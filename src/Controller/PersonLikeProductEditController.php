@@ -43,12 +43,19 @@ class PersonLikeProductEditController extends AbstractController
     }
 
 
-    public function person_like_product_edit(Request $request, $id_person) : Response
+    public function person_like_product_edit(Request $request, $id_person, $exist) : Response
     {   
         $personManager = $this->getDoctrine()->getManager();
         $person = $personManager->getRepository(Person::class)->find($id_person);
 
         $personHaveProducts = $person->getPersonHaveProducts();
+        
+        $productsLiked = array();
+        $i=0;
+        foreach ($personHaveProducts as $personHaveProduct) {
+            $productsLiked[$i]=$personHaveProduct->getProduct();
+            $i=$i+1;
+        }
 
         $form_product = $this->createFormBuilder()
                     ->setMethod('GET')
@@ -68,9 +75,13 @@ class PersonLikeProductEditController extends AbstractController
 
         $form_product->handleRequest($request);
                 
+        $request= Request::createFromGlobals();
+        $requestForm=$request->query->get('form');
+        $this->session->set('sessionForm', $requestForm  );
         $products=array();
+        
         if ($form_product->isSubmitted() ) {
-            
+                           
             $data = $form_product->getData();
             $name=$data['name'];
             $date_from=$data['date_from'];
@@ -104,11 +115,11 @@ class PersonLikeProductEditController extends AbstractController
             }
 
             $products = $queryBuilder->getQuery()->getResult();
+
             
             $request= Request::createFromGlobals();
             $requestForm=$request->query->get('form');
             $this->session->set('sessionForm', $requestForm  );
-            
             
             if (isset($date_from) ) $date_from->modify('+1 second');
 
@@ -121,8 +132,10 @@ class PersonLikeProductEditController extends AbstractController
                 'date_from' => $date_from,
                 'date_to' => $date_to,
                 'name' => $name,
+                
+                'exist' => $exist,
 
-                'persontHaveProducts'=>$personHaveProducts,
+                'productsLiked' => $productsLiked,
                     
             ]);
 
@@ -133,7 +146,8 @@ class PersonLikeProductEditController extends AbstractController
                     
                 'form_product' => $form_product->createView(),
                 'products' => $products,
-                'person' => $person,          
+                'person' => $person, 
+                'productsLiked' => $productsLiked,       
                     
             ]);
         }
@@ -143,34 +157,56 @@ class PersonLikeProductEditController extends AbstractController
 
     public function person_like_product_add ($id_person, $id_product)
     {
+        $requestForm=$this->session->get('sessionForm'); 
+        
         $personLikeProductManager = $this->getDoctrine()->getManager();
-        $personLikeProduct = $productManager->getRepository(PersonLikeProduct::class)
-                                                ->findBy ([
-                                                    'id_person' => $id_person, 
-                                                    'id_product' => $id_product 
-                                                ]);
+        $personLikeProductArray = $personLikeProductManager->getRepository(PersonLikeProduct::class)
+                                                        ->findBy ([
+                                                            'person' => $id_person, 
+                                                            'product' => $id_product 
+                                                        ]);
+        if (empty($personLikeProductArray) ) { 
             
-        $productManager->remove($personLikeProduct);
-        $productManager->flush();
-    
-        return $this->redirectToRoute('person_like_product_edit');
+            $productManager = $this->getDoctrine()->getManager();
+            $product = $productManager->getRepository(Product::class)->find($id_product);
+
+            $personManager = $this->getDoctrine()->getManager();
+            $person = $personManager->getRepository(Person::class)->find($id_person);
+            
+            $personLikeProduct = new PersonLikeProduct();
+            $personLikeProduct->setPerson($person);
+            $personLikeProduct->setProduct($product);
+            
+            $personLikeProductManager ->persist($personLikeProduct);
+            $personLikeProductManager ->flush();
+
+            $request= Request::createFromGlobals();
+            $requestForm=$this->session->get('sessionForm'); 
+        }
+        else {
+            $exist=1;
+            return $this->redirectToRoute( 'person_like_product_edit', ['id_person'=> $id_person, 'exist' => $exist,
+            'form'=>$requestForm]);
+        }
+
+        return $this->redirectToRoute( 'person_like_product_edit', ['id_person'=> $id_person,
+                                                                    'form'=>$requestForm]);
     }
 
     public function person_like_product_delete ( $id_person, $id_product)
     {
         $personLikeProductManager = $this->getDoctrine()->getManager();
-        $personLikeProduct = $this->getDoctrine()->getRepository(PersonLikeProduct::class)
+        $personLikeProductArray = $this->getDoctrine()->getRepository(PersonLikeProduct::class)
                                                 ->findBy ([
                                                     'person' => $id_person, 
                                                     'product' => $id_product 
                                                 ]);
             
-        foreach ($personLikeProduct as $persprod) {
+        foreach ($personLikeProductArray as $persprod) {
             $personLikeProductManager->remove($persprod);
             $personLikeProductManager->flush();
         }   
 
-        $request= Request::createFromGlobals();
         $requestForm=$this->session->get('sessionForm'); 
         
         return $this->redirectToRoute( 'person_like_product_edit', ['id_person'=> $id_person,

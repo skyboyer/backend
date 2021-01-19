@@ -18,12 +18,12 @@
             <tr>
                 <th>Name of the product</th> <th>Info</th> <th>Publication date</th> <th>UNLIKE</th> 
                         
-                {% for persprod in person.getPersonHaveProducts %}
+                {% for productLiked in productsLiked %}
                     <tr>
-                        <td>{{persprod.getProduct.getName }}</td>
-                        <td>{{persprod.getProduct.getInfo}}</td>
-                        <td>{{persprod.getProduct.getpublicdate|date('Y-m-d')}}</td>
-                        <td>  <a class="button" href="{{ path('person_like_product_delete', {id_person: person.id, id_product: persprod.getProduct.getId }) }}"><span class="minus"> &#8722   </span> </a> </td> 
+                        <td>{{productLiked.getName }}</td>
+                        <td>{{productLiked.getInfo}}</td>
+                        <td>{{productLiked.getpublicdate|date('Y-m-d')}}</td>
+                        <td>  <a class="button" href="{{ path('person_like_product_delete', {id_person: person.id, id_product: productLiked.getId }) }}"><span> &#8722   </span> </a> </td> 
                     </tr>
                 {% endfor %} 
             
@@ -41,19 +41,36 @@
 
         {% if products is not empty  %}
             <h1>Choose new like:</h1>
+            {% if exist == 1 %}
+                The product is already liked!!<br><br>
+            {% endif %}
+
             <table>
                 <tr>
                     <th>Name of the product</th> <th>Info</th> <th>Publication date</th> <th>LIKE</th>
                 </tr>
-                        
-                {% for product in products %} 
-                    <tr>
-                        <td>{{product.name}} </td>
-                        <td>{{product.info}}</td>
-                        <td>{{product.publicdate|date('Y-m-d')}}</td>
-                        <td> <a class="button" href="{{ path('person_like_product_add', {id_person: person.id, id_product: product.id}) }}"> <span class="minus"> +  </span> </a> </td> 
-                    </tr>
-                {% endfor %}   
+                
+                        {% for product in products %} 
+                            <tr>
+                                    
+                                    <td>{{product.name}} </td>
+                                    <td>{{product.info}}</td>
+                                    <td>{{product.publicdate|date('Y-m-d')}}</td>
+                                    <td> 
+                                                                         
+                                        {% if product in productsLiked %}
+                                                Already liked!
+                                            {% else %}
+                                                <a class="button" href="{{ path('person_like_product_add', {id_person: person.id, id_product: product.id}) }}"> <span> +  </span> </a> 
+                                        {% endif %}
+                                    
+                                    </td> 
+                            </tr>
+                        {% endfor %}
+                    
+                    
+                    
+            
             </table>
 
         {% endif %}
