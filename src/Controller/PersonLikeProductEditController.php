@@ -30,9 +30,19 @@ use App\Repository\PersonLikeProductRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\EntityManagerInterface;
 
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
+
 
 class PersonLikeProductEditController extends AbstractController
 {
+    private $session;
+
+    public function __construct(SessionInterface $session)
+    {
+        $this->session = $session;
+    }
+
+
     public function person_like_product_edit(Request $request, $id_person) : Response
     {   
         $personManager = $this->getDoctrine()->getManager();
@@ -57,8 +67,7 @@ class PersonLikeProductEditController extends AbstractController
                     ->getForm();
 
         $form_product->handleRequest($request);
-        
-        
+                
         $products=array();
         if ($form_product->isSubmitted() ) {
             
@@ -96,6 +105,10 @@ class PersonLikeProductEditController extends AbstractController
 
             $products = $queryBuilder->getQuery()->getResult();
             
+            $request= Request::createFromGlobals();
+            $requestForm=$request->query->get('form');
+            $this->session->set('sessionForm', $requestForm  );
+            
             
             if (isset($date_from) ) $date_from->modify('+1 second');
 
@@ -108,7 +121,7 @@ class PersonLikeProductEditController extends AbstractController
                 'date_from' => $date_from,
                 'date_to' => $date_to,
                 'name' => $name,
-                               
+
                 'persontHaveProducts'=>$personHaveProducts,
                     
             ]);
@@ -143,7 +156,7 @@ class PersonLikeProductEditController extends AbstractController
         return $this->redirectToRoute('person_like_product_edit');
     }
 
-    public function person_like_product_delete ($id_person, $id_product)
+    public function person_like_product_delete ( $id_person, $id_product)
     {
         $personLikeProductManager = $this->getDoctrine()->getManager();
         $personLikeProduct = $this->getDoctrine()->getRepository(PersonLikeProduct::class)
@@ -152,10 +165,16 @@ class PersonLikeProductEditController extends AbstractController
                                                     'product' => $id_product 
                                                 ]);
             
-        $personLikeProductManager->remove($personLikeProduct[0]);
-        $personLikeProductManager->flush();
-    
-        return $this->redirectToRoute( 'person_like_product_edit', array ('id_person'=> $id_person));
+        foreach ($personLikeProduct as $persprod) {
+            $personLikeProductManager->remove($persprod);
+            $personLikeProductManager->flush();
+        }   
+
+        $request= Request::createFromGlobals();
+        $requestForm=$this->session->get('sessionForm'); 
+        
+        return $this->redirectToRoute( 'person_like_product_edit', ['id_person'=> $id_person,
+                                                                    'form'=>$requestForm]);
     }
         
         

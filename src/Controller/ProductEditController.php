@@ -13,6 +13,11 @@ use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use App\Entity\Product;
 use App\Form\Type\ProductType;
 use App\Repository\ProductRepository;
+
+use App\Entity\PersonLikeProduct;
+use App\Form\Type\PersonLikeProductType;
+use App\Repository\PersonLikeProductRepository;
+
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\EntityManagerInterface;
 
@@ -85,6 +90,16 @@ class ProductEditController extends AbstractController
         $productManager->remove($product);
         $productManager->flush();
 
+        $personLikeProductManager = $this->getDoctrine()->getManager();
+        $personLikeProduct = $this->getDoctrine()->getRepository(PersonLikeProduct::class)
+                                                ->findBy ([
+                                                    'product' => $id 
+                                                ]);
+            
+        foreach ($personLikeProduct as $persprod) {
+            $personLikeProductManager->remove($persprod);
+            $personLikeProductManager->flush();
+        }
         return $this->redirectToRoute('product');
     }
 

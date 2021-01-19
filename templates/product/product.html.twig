@@ -12,7 +12,7 @@
 
     <button type="button"><a class="button" href="{{ path('product') }}">Show all items</a></button>
 
-    <button type="button" id="addbutton"><a class="button" target="_blanc" href="{{ path('product_add') }}">Add new product</a></button>
+    <button type="button" id="addbutton"><a class="button" href="{{ path('product_add') }}">Add new product</a></button>
 
     {% if not products %}
             NO MATCHING!!
@@ -31,7 +31,7 @@
                             <td> 
                                 {{item.publicdate|date('Y-m-d')}}
                             </td>
-                            <td><a target="_blanc" href="{{ path('product_edit', {id: item.id}) }}">edit the product</a></td>
+                            <td><a href="{{ path('product_edit', {id: item.id}) }}">edit the product>></a></td>
                         </tr>
                    
                 {% endfor %}   

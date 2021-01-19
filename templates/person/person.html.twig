@@ -12,7 +12,7 @@
 
     <button type="button"><a class="button" href="{{ path('person') }}">Show all users</a></button>
 
-    <button type="button" id="addbutton"><a class="button" target="_blanc" href="{{ path('person_add') }}">Add new user</a></button>
+    <button type="button" id="addbutton"><a class="button" href="{{ path('person_add') }}">Add new user</a></button>
 
     {% if not persons %}
             NO MATCHING!!
@@ -32,7 +32,7 @@
                             <td> {{person.iname}} </td>
                             <td> {{person.fname}} </td>
                             <td> {{ person.getStateString }} </td>
-                            <td><a target="_blanc" href="{{ path('person_edit', {id: person.id}) }}">edit the user>></a></td>
+                            <td><a href="{{ path('person_edit', {id: person.id}) }}">edit the user>></a></td>
                         </tr>
                 {% endfor %}   
             
