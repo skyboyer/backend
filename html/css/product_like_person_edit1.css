@@ -61,5 +61,8 @@ a {
 	text-decoration: none;
 	
 }
+#form_state > * {
+	width: 50px;
+}
 
 

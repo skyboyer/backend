@@ -51,6 +51,9 @@ td, th {
 	float:left;
 	padding: 25px;
 }
+#person_state > * {
+	width: 50px;
+}
 
 
 

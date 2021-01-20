@@ -64,10 +64,12 @@ class PersonLikeProductModuleController extends AbstractController
                                      'choices'=> [
                                         'Active' => Person::ACTIVE,
                                         'Banned' => Person::BANNED,
-                                        'Deleted' => Person::DELETED,
-                                        ],
-                                    'placeholder'=>""
-                                    ])  
+                                        'Deleted' => Person::DELETED],
+                                    'placeholder'=>"",
+                                    //'required' => false,
+                                    'expanded'=>true, 'multiple'=>true,
+                                    'data' => [Person::ACTIVE],
+                                    'mapped' => false])  
                     ->add('send', SubmitType::class, ['label'=>'Show products, which these users like']);
                                     
         $form_product = $this->createFormBuilder()
@@ -92,15 +94,13 @@ class PersonLikeProductModuleController extends AbstractController
         $match=0;
         $products=array();
         $persons=array();
-        $productHavePersons = array();
-        $personHaveProducts = array();
-        
+                
         if ($form_person->isSubmitted() ) {
                        
             $login=$form_person->get('login')->getData();
             $i_name=$form_person->get('i_name')->getData();
             $f_name=$form_person->get('f_name')->getData();
-            $state=$person->getState();
+            $states=$form_person->get('state')->getData();
 
             $entityManager = $this->getDoctrine()->getManager();
             $queryBuilder = $entityManager->createQueryBuilder()
@@ -125,9 +125,9 @@ class PersonLikeProductModuleController extends AbstractController
                 $queryBuilder= $queryBuilder->setParameter('login', $login)
                                             -> andWhere('pers.login = :login');
             }
-            if (isset($state)) {
-                $queryBuilder= $queryBuilder->setParameter('state', $state)
-                                            -> andWhere('pers.state = :state');
+            if (isset($states)) {
+                $queryBuilder= $queryBuilder->setParameter('states', $states)
+                                            -> andWhere('pers.state in (:states)');
             }  
             $products = $queryBuilder->getQuery()->getResult();
 
@@ -149,15 +149,22 @@ class PersonLikeProductModuleController extends AbstractController
                 $queryBuilder= $queryBuilder->setParameter('login', $login)
                                         -> andWhere('p.login = :login');
             }
-            if (isset($state)) {
-                $queryBuilder= $queryBuilder->setParameter('state', $state)
-                                            -> andWhere('p.state = :state');
-                $state=$person->getStateString();
+            if (isset($states)) {
+                $queryBuilder= $queryBuilder->setParameter('states', $states)
+                                            -> andWhere('p.state in (:states)');
             }
             $persons = $queryBuilder->getQuery()->getResult();
                         
             $match=1;
-
+            $statesString=array();
+            
+            foreach($states as $state)
+            {
+                if ($state== Person::ACTIVE) array_push($statesString, 'ACTIVE');
+                if ($state==Person::BANNED) array_push($statesString, 'BANNED');
+                if ($state==Person::DELETED) array_push($statesString, 'DELETED');
+            }
+        
             $contents = $this->renderView('person_like_product/person_like_product.html.twig', [
                 
                 'form_person' => $form_person->createView(),
@@ -169,9 +176,8 @@ class PersonLikeProductModuleController extends AbstractController
                 'login' => $login,
                 'i_name' => $i_name,
                 'f_name' => $f_name,
-                'state' => $state,
-                'productHavePersons'=>$productHavePersons
-                    
+                'states' => $statesString,
+                                    
             ]);
         }
         else {
@@ -234,10 +240,6 @@ class PersonLikeProductModuleController extends AbstractController
             }
             $products = $queryBuilder->getQuery()->getResult();
             
-            /*foreach ($persons as $person) {
-                array_push($personHaveProducts, $person->getPersonHaveProducts() ); 
-            }*/
-
             $match=2;
             if (isset($date_from) ) $date_from->modify('+1 second');
 
@@ -252,8 +254,7 @@ class PersonLikeProductModuleController extends AbstractController
                 'date_from' => $date_from,
                 'date_to' => $date_to,
                 'name' => $name,
-                'personHaveProducts'=>$personHaveProducts,
-                    
+                                    
             ]);
 
             
@@ -434,10 +435,8 @@ class PersonLikeProductModuleController extends AbstractController
         $productHavePersons = $product->getProductHavePersons();
         
         $personsLoved = array();
-        $i=0;
         foreach ($productHavePersons as $productHavePerson) {
-            $personsLoved[$i]=$productHavePerson->getPerson();
-            $i=$i+1;
+            array_push($personsLoved, $productHavePerson->getPerson());
         }
 
         $form_person = $this->createFormBuilder()
@@ -457,14 +456,16 @@ class PersonLikeProductModuleController extends AbstractController
                                     'class'=> Person::class,
                                     'choice_label' => 'f_name',
                                     'required' => false])
-                                ->add('state', ChoiceType::class, ['label'=>'User\'s state',
+                                ->add('state', ChoiceType::class, ['label'=>'User\'s state:',
                                                             'placeholder'=>"",
-                                                            'required' => false,
+                                                            //'required' => true,
+                                                            'expanded'=>true, 'multiple'=>true,
                                                             'choices'=> [
                                                                 'Active' => Person::ACTIVE,
                                                                 'Banned' => Person::BANNED,
                                                                 'Deleted' => Person::DELETED,
                                                                 ],
+                                                            'data' => [Person::ACTIVE],
                                                             ])
                                 ->add('send', SubmitType::class, ['label'=>'Show users'])
                                 ->getForm();
@@ -487,16 +488,13 @@ class PersonLikeProductModuleController extends AbstractController
             $entityManager = $this->getDoctrine()->getManager();
             $queryBuilder = $entityManager->createQueryBuilder()
                                             -> select('p')
-                                            -> from ('App\Entity\Person', 'p')
-                                            -> orderBy('p.state', 'ASC');
-
+                                            -> from ('App\Entity\Person', 'p');
             if (isset($i_name)) {
                 $i_name=$i_name->getIName();
                 $queryBuilder=$queryBuilder->setParameter('i_name', strtolower($i_name))
                                             -> andwhere ($queryBuilder->expr()->eq(
                                                         $queryBuilder-> expr()->lower('p.i_name'), ':i_name') ) ;
             }
-
             if (isset($f_name)) {
                 $f_name=$f_name->getFName();
                 $queryBuilder=$queryBuilder->setParameter('f_name', strtolower($f_name))
@@ -509,15 +507,12 @@ class PersonLikeProductModuleController extends AbstractController
                 $queryBuilder= $queryBuilder->setParameter('login', $login)
                                         -> andWhere('p.login = :login');
             }
-        
             if (isset($state)) {
                 $queryBuilder= $queryBuilder->setParameter('state', $state)
-                                            -> andWhere('p.state = :state');
+                                            -> andWhere('p.state in (:state)');
             }
-
             $persons = $queryBuilder->getQuery()->getResult();
 
-            
             $request= Request::createFromGlobals();
             $requestForm=$request->query->get('form');
             $this->session->set('sessionFormPerson', $requestForm  );
@@ -528,16 +523,11 @@ class PersonLikeProductModuleController extends AbstractController
                 'persons' => $persons,
                 'product' => $product,
 
-                'login'=> $login,
-                'i_name'=> $i_name,
-                'f_name'=> $f_name,
-                'state'=> $state,
-                'active' => Person::ACTIVE,
-                'banned' => Person::BANNED,
-                'deleted' => Person::DELETED,
-                
+               // 'login'=> $login,
+                //'i_name'=> $i_name,
+                //'f_name'=> $f_name,
+                                               
                 'personsLoved' => $personsLoved,
-                    
             ]);
 
             
