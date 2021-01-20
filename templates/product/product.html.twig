@@ -4,8 +4,9 @@
     <link rel="stylesheet" href="/css/product1.css">
 {% endblock %}
 
-{% block content %}  
-    
+{% block content %}
+
+      
     <h1>List of Products</h1>   
 
     {{form(form)}}
@@ -39,6 +40,9 @@
             </table>
         {% endif %}  
 
+    <br><br> <a href="{{ path('person') }}">GO TO ADMINISTRATING OF USERS >> <br></a>
+    <a href="{{ path('person_like_product') }}">GO TO ADMINISTRATING OF PREFERENCIES >> </a> 
+    
 {% endblock %}
 
 

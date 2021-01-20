@@ -5,15 +5,15 @@
 
 product:
             path: /product
-            controller: App\Controller\ProductController::product
+            controller: App\Controller\ProductModuleController::product
 
 product_add:
             path: /products/add
-            controller: App\Controller\ProductAddController::product_add
+            controller: App\Controller\ProductModuleController::product_add
 
 product_edit:
             path: /products/edit/{id}
-            controller: App\Controller\ProductEditController::product_edit  
+            controller: App\Controller\ProductModuleController::product_edit  
 
 product_delete:
             path: /products/delete/{id}
@@ -21,47 +21,43 @@ product_delete:
 
 person:
             path: /person
-            controller: App\Controller\PersonController::person
+            controller: App\Controller\PersonModuleController::person
 
 person_add:
             path: /persons/add
-            controller: App\Controller\PersonAddController::person_add
+            controller: App\Controller\PersonModuleController::person_add
 
 person_edit:
             path: /person/edit/{id}
-            controller: App\Controller\PersonEditController::person_edit  
-
-person_delete:
-            path: /person/delete/{id}
-            controller: App\Controller\PersonEditController::person_delete
+            controller: App\Controller\PersonModuleController::person_edit  
 
 person_like_product:
             path: /person/like/product
-            controller: App\Controller\PersonLikeProductController::person_like_product
+            controller: App\Controller\PersonLikeProductModuleController::person_like_product
 
 person_like_product_edit:
             path: /person/like/product/edit/{id_person}
-            controller: App\Controller\PersonLikeProductEditController::person_like_product_edit
+            controller: App\Controller\PersonLikeProductModuleController::person_like_product_edit
 
 person_like_product_add:
             path: /person/like/product/add/{id_person}/{id_product}
-            controller: App\Controller\PersonLikeProductEditController::person_like_product_add
+            controller: App\Controller\PersonLikeProductModuleController::person_like_product_add
 
 person_like_product_delete:
             path: /person/like/product/delete/{id_person}/{id_product}
-            controller: App\Controller\PersonLikeProductEditController::person_like_product_delete
+            controller: App\Controller\PersonLikeProductModuleController::person_like_product_delete
 
 product_like_person_edit:
             path: /product/like/person/edit/{id_product}
-            controller: App\Controller\ProductLikePersonEditController::product_like_person_edit
+            controller: App\Controller\PersonLikeProductModuleController::product_like_person_edit
 
 product_like_person_add:
             path: /product/like/person/add/{id_product}/{id_person}
-            controller: App\Controller\ProductLikePersonEditController::product_like_person_add
+            controller: App\Controller\PersonLikeProductModuleController::product_like_person_add
 
 product_like_person_delete:
             path: /product/like/person/delete/{id_product}/{id_person}
-            controller: App\Controller\ProductLikePersonEditController::product_like_person_delete
+            controller: App\Controller\PersonLikeProductModuleController::product_like_person_delete
             
             
 

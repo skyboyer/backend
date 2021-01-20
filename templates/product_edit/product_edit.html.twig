@@ -6,7 +6,7 @@
 
 {% block content %}           
 
-    <h1>CHANGING ITEMS</h1>     
+    <h1>Changing Products</h1>     
 
     <span>You are changing the the Product with id {{id}}:</span><br>
     {{name1}} from {{date1}}<br>
@@ -25,5 +25,7 @@
             new Date: {{product.publicdate|date('Y-m-d')}}<br>
             new Information: {{product.info}}<br>
     {% endif %}
+
+    <br><br><a href="{{ path('product') }}">BACK TO LIST OF PRODUCTS >> </a>  
     
 {% endblock %}
