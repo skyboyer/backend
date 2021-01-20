@@ -59,7 +59,6 @@ class PersonModuleController extends AbstractController
             $entityManager = $this->getDoctrine()->getManager();
             $queryBuilder = $entityManager->createQueryBuilder()
                                             -> select('p')
-                                            
                                             -> from ('App\Entity\Person', 'p')
                                             -> orderBy('p.state', 'ASC');
 

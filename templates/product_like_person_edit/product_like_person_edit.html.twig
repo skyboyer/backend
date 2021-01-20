@@ -4,7 +4,8 @@
     <link rel="stylesheet" href="/css/person_like_product_edit.css">
 {% endblock %}
 
-{% block content %}  
+{% block content %} 
+    <h1>Editing product's lovers</h1>
     
     <div id='person'>
         <h1>Product:</h1>
@@ -13,7 +14,7 @@
             Publication date: {{ product.publicdate|date('Y-m-d') }}. <br>  
             
         
-        <h1>Persons, which loved this product:</h1>
+        <h1>Persons, which like this product:</h1>
         <table>
             <tr>
                 <th>Login</th> <th>Name</th> <th>Surname</th> <th>State</th><th>UNLOVE</th> 
@@ -41,7 +42,7 @@
         <button type="button"><a class="button" href="{{ path('product_like_person_edit', {id_product: product.id}) }}">RESET</a></button><br>
 
         {% if persons is not empty  %}
-            <h1>Choose new love:</h1>
+            <h1>Choose new lovers:</h1>
            
             <table>
                 <tr>
@@ -70,6 +71,8 @@
         {% endif %}
     </div>
     <div style='clear:both'></div>
+
+    <br><br><a href="{{ path('person_like_product') }}">BACK TO COMMON LIST OF PREFERENCIES >> </a> 
 
 {% endblock %}  
 
