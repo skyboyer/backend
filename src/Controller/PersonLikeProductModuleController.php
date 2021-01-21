@@ -39,6 +39,7 @@ class PersonLikeProductModuleController extends AbstractController
 
     public function person_like_product(Request $request) : Response
     {   
+    //form for filtering persons to see their likes
         $person = new Person();
         $form_person = $this->createForm (PersonType::class, $person,['method' => 'GET'])
                     ->add('login', EntityType::class, [
@@ -80,6 +81,7 @@ class PersonLikeProductModuleController extends AbstractController
                                     'mapped' => false])  
                     ->add('send', SubmitType::class, ['label'=>'Show products, which these users like']);
                                     
+     //form for filtering products to see its lovers   
         $form_product = $this->createFormBuilder()
                     ->setMethod('GET')
                     ->add('name', EntityType::class, [
@@ -106,7 +108,7 @@ class PersonLikeProductModuleController extends AbstractController
         $form_person->handleRequest($request);      
         $form_product->handleRequest($request);
         
-        $match=0;
+        $match=0; // shows, that no form is submitted
         $products=array();
         $persons=array();
                 
@@ -117,6 +119,7 @@ class PersonLikeProductModuleController extends AbstractController
             $f_name=$form_person->get('f_name')->getData();
             $states=$form_person->get('state')->getData();
 
+        //filtering persons based on form info
             $entityManager = $this->getDoctrine()->getManager();
             $queryBuilder = $entityManager->createQueryBuilder()
                                             -> select('p')
@@ -144,9 +147,10 @@ class PersonLikeProductModuleController extends AbstractController
             }
             $persons = $queryBuilder->getQuery()->getResult();
                         
-            $match=1;
+            $match=1;  // shows, that form_person is submitted
+
+        //array of chosen in form states in string format    
             $statesString=array();
-            
             foreach($states as $state)
             {
                 if ($state== Person::ACTIVE) array_push($statesString, 'ACTIVE');
@@ -188,6 +192,7 @@ class PersonLikeProductModuleController extends AbstractController
             $date_from=$data['date_from'];
             $date_to=$data['date_to'];
 
+        //filtering products based on form info
             $entityManager = $this->getDoctrine()->getManager();
             $queryBuilder = $entityManager->createQueryBuilder()
                                             -> select('p')
@@ -210,7 +215,7 @@ class PersonLikeProductModuleController extends AbstractController
             }
             $products = $queryBuilder->getQuery()->getResult();
             
-            $match=2;
+            $match=2;  // shows, that form_product is submitted
            
             $contents = $this->renderView('person_like_product/person_like_product.html.twig', [
                 
@@ -233,16 +238,18 @@ class PersonLikeProductModuleController extends AbstractController
 
     public function person_like_product_edit(Request $request, $id_person) : Response
     {   
+    //editing info about person's likes    
         $personManager = $this->getDoctrine()->getManager();
         $person = $personManager->getRepository(Person::class)->find($id_person);
 
+    //making array of liked Products objects    
         $personHaveProducts = $person->getPersonHaveProducts();
-        
         $productsLiked = array();
         foreach ($personHaveProducts as $personHaveProduct) {
             array_push($productsLiked, $personHaveProduct->getProduct());
         }
 
+    //form for chose products to like    
         $form_product = $this->createFormBuilder()
                     ->setMethod('GET')
                     ->add('name', EntityType::class, [
@@ -268,11 +275,14 @@ class PersonLikeProductModuleController extends AbstractController
 
         $form_product->handleRequest($request);
                 
+    //saving info about chosen/not chosen products (by saving GET form parameters) 
         $request= Request::createFromGlobals();
         $requestForm=$request->query->get('form');
         $this->session->set('sessionForm', $requestForm  );
-        $products=array();
         
+        $products=array();
+
+    //filtering products    
         if ($form_product->isSubmitted() ) {
                            
             $data = $form_product->getData();
@@ -304,7 +314,7 @@ class PersonLikeProductModuleController extends AbstractController
             }
             $products = $queryBuilder->getQuery()->getResult();
 
-            
+        //saving info about chosen/not chosen products (by saving GET form parameters) 
             $request= Request::createFromGlobals();
             $requestForm=$request->query->get('form');
             $this->session->set('sessionForm', $requestForm  );
@@ -338,13 +348,15 @@ class PersonLikeProductModuleController extends AbstractController
     {
         $requestForm=$this->session->get('sessionForm'); 
         
+    // extracting array of PersonLikeProduct objects for the chosen product and person
         $personLikeProductManager = $this->getDoctrine()->getManager();
         $personLikeProductArray = $personLikeProductManager->getRepository(PersonLikeProduct::class)
                                                         ->findBy ([
                                                             'person' => $id_person, 
                                                             'product' => $id_product 
                                                         ]);
-        if (empty($personLikeProductArray) ) { 
+    //checking if this like is already exist for the person  and adding new like for the person if not exist
+            if (empty($personLikeProductArray) ) { 
             
             $productManager = $this->getDoctrine()->getManager();
             $product = $productManager->getRepository(Product::class)->find($id_product);
@@ -359,6 +371,7 @@ class PersonLikeProductModuleController extends AbstractController
             $personLikeProductManager ->persist($personLikeProduct);
             $personLikeProductManager ->flush();
 
+        //reconstraction of chosen/not chosen products (by getting saved GET form parameters) 
             $request= Request::createFromGlobals();
             $requestForm=$this->session->get('sessionForm'); 
         }
@@ -369,18 +382,20 @@ class PersonLikeProductModuleController extends AbstractController
 
     public function person_like_product_delete ( $id_person, $id_product)
     {
+        
+    // extracting array of PersonLikeProduct objects for the chosen product and person    
         $personLikeProductManager = $this->getDoctrine()->getManager();
         $personLikeProductArray = $this->getDoctrine()->getRepository(PersonLikeProduct::class)
                                                 ->findBy ([
                                                     'person' => $id_person, 
                                                     'product' => $id_product 
                                                 ]);
-            
+    // delete like for the person   
         foreach ($personLikeProductArray as $persprod) {
             $personLikeProductManager->remove($persprod);
             $personLikeProductManager->flush();
         }   
-
+    //reconstraction of chosen/not chosen products (by getting saved GET form parameters) 
         $requestForm=$this->session->get('sessionForm'); 
         
         return $this->redirectToRoute( 'person_like_product_edit', ['id_person'=> $id_person,
@@ -513,12 +528,14 @@ class PersonLikeProductModuleController extends AbstractController
     {
         $requestForm=$this->session->get('sessionFormPerson'); 
         
+    // extracting array of PersonLikeProduct objects for the chosen product and person        
         $productLikePersonManager = $this->getDoctrine()->getManager();
         $productLikePersonArray = $productLikePersonManager->getRepository(PersonLikeProduct::class)
                                                         ->findBy ([
                                                             'person' => $id_person, 
                                                             'product' => $id_product 
                                                         ]);
+    //checking if this lover is already exist for the person  and adding new like for the person if not exist
         if (empty($productLikePersonArray) ) { 
             
             $productManager = $this->getDoctrine()->getManager();
@@ -534,6 +551,7 @@ class PersonLikeProductModuleController extends AbstractController
             $productLikePersonManager ->persist($personLikeProduct);
             $productLikePersonManager ->flush();
 
+        //reconstraction of chosen/not chosen products (by getting saved GET form parameters) 
             $request= Request::createFromGlobals();
             $requestForm=$this->session->get('sessionFormPerson'); 
         }
@@ -544,18 +562,20 @@ class PersonLikeProductModuleController extends AbstractController
 
     public function product_like_person_delete ($id_product, $id_person)
     {
+    // extracting array of PersonLikeProduct objects for the chosen product and person    
         $productLikePersonManager = $this->getDoctrine()->getManager();
         $productLikePersonArray = $this->getDoctrine()->getRepository(PersonLikeProduct::class)
                                                 ->findBy ([
                                                     'person' => $id_person, 
                                                     'product' => $id_product 
                                                 ]);
-            
+    //delete lover for the product    
         foreach ($productLikePersonArray as $prodpers) {
             $productLikePersonManager->remove($prodpers);
             $productLikePersonManager->flush();
         }   
 
+    //reconstraction of chosen/not chosen products (by getting saved GET form parameters) 
         $requestForm=$this->session->get('sessionFormPerson'); 
         
         return $this->redirectToRoute( 'product_like_person_edit', ['id_product'=> $id_product,

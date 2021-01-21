@@ -25,7 +25,7 @@ class PersonModuleController extends AbstractController
 {
     public function person(Request $request) : Response
     {   
-        
+    // filter for persons
         $form = $this->createFormBuilder()
                     ->setMethod('GET')
                     ->add('login', TextType::class, ['label'=>'Login (ATTENTION ON REGISTER!):',
@@ -115,6 +115,7 @@ class PersonModuleController extends AbstractController
 
     public function person_edit (Request $request, $id)
     {
+    // person of given id   
         $personManager = $this->getDoctrine()->getManager();
         $person = $personManager->getRepository(Person::class)->find($id);
         
@@ -123,6 +124,7 @@ class PersonModuleController extends AbstractController
         $f_name1=$person->getFName();
         $state1=$person->getStateString();
                 
+    //form for editing person data 
         $form = $this->createForm (PersonType::class, $person)
                         ->add('save', SubmitType::class, ['label'=> 'Save changes']);
                      
@@ -157,6 +159,7 @@ class PersonModuleController extends AbstractController
 
     public function person_add (Request $request)
     {
+        //add new person to DB
         $person = new Person();
         $form = $this->createForm (PersonType::class, $person)
                             ->add('save', SubmitType::class, ['label'=>'Add the Person']);

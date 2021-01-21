@@ -31,8 +31,8 @@ use Doctrine\ORM\EntityManagerInterface;
 class ProductModuleController extends AbstractController
 {
     public function product(Request $request) : Response
-    {   
-        
+    {     
+    // filter for products by name and date
         $form = $this->createFormBuilder()
                     ->setMethod('GET')
                     ->add('name', TextType::class, ['label'=>'Name:',
@@ -105,12 +105,17 @@ class ProductModuleController extends AbstractController
 
     public function product_edit (Request $request, $id)
     {
+        
+    // product of given id    
         $productManager = $this->getDoctrine()->getManager();
         $product = $productManager->getRepository(Product::class)->find($id);
-        
+    
+    //if product is already deleted,  the page is not accessable for the id    
         if ( $product==null ) {
             return $this->redirectToRoute('product');
         }
+    
+    //form for editing product data
         else {
             $name1=$product->getName();
             $date1=date_format($product->getPublicDate(), 'Y-m-d');
@@ -121,9 +126,10 @@ class ProductModuleController extends AbstractController
                                 'label'=>'Date of publication',
                                 'widget' => 'single_text',
                                 'html5' => false,
-                                'attr' => ['class' => 'datepicker', 'readonly'=>'readonly'] ])
+                                'attr' => ['class' => 'datepicker', 'readonly'=>'readonly'] ]) //adding jQuery datepicker
                             ->add('save', SubmitType::class, ['label'=> 'Save changes']);
     
+    //button for deleting product    
             $form2 = $this->createFormBuilder()
                 ->add('send', SubmitType::class, ['label'=>'Delete the Product!!'])
                 ->getForm();
@@ -168,9 +174,10 @@ class ProductModuleController extends AbstractController
         $productManager = $this->getDoctrine()->getManager();
         $product = $productManager->getRepository(Product::class)->find($id);
         
+    //remove product from DB
         $productManager->remove($product);
         $productManager->flush();
-
+    // remove products relations
         $personLikeProductManager = $this->getDoctrine()->getManager();
         $personLikeProduct = $this->getDoctrine()->getRepository(PersonLikeProduct::class)
                                                 ->findBy ([
@@ -186,6 +193,7 @@ class ProductModuleController extends AbstractController
 
     public function product_add (Request $request)
     {
+    //ading product to DB 
         $product = new Product();
         $product->setPublicDate(date_create());
         

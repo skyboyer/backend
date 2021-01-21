@@ -33,12 +33,14 @@
         {% endblock %}
         
         {% block javascripts %}
+            {# widget for select fields#}
             <script>
                 $(document).ready(function() {
                     $('.js-select2').select2();
                 });
             </script>
 
+            {# widget for date fields#}
             <script>
                 $( function() {
                   $( ".datepicker" ).datepicker({

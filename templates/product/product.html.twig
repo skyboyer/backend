@@ -24,19 +24,15 @@
                 </tr>
                 
                 {% for item in products %} 
-                   
-                                 
-                        <tr>
-                            <td> {{item.name}} </td>
-                            <td> {{item.info}} </td>
-                            <td> 
-                                {{item.publicdate|date('Y-m-d')}}
-                            </td>
-                            <td><a href="{{ path('product_edit', {id: item.id}) }}">edit the product>></a></td>
-                        </tr>
-                   
+                    <tr>
+                        <td> {{item.name}} </td>
+                        <td> {{item.info}} </td>
+                        <td> 
+                            {{item.publicdate|date('Y-m-d')}}
+                        </td>
+                        <td><a href="{{ path('product_edit', {id: item.id}) }}">edit the product>></a></td>
+                    </tr>
                 {% endfor %}   
-            
             </table>
         {% endif %}  
 
