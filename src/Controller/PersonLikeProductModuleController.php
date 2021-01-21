@@ -96,12 +96,12 @@ class PersonLikeProductModuleController extends AbstractController
                                         'required' => false,
                                         'widget' => 'single_text',
                                         'html5' => false,
-                                        'attr' => ['class' => 'datepicker', 'readonly'=>'readonly'] ])
+                                        'attr' => ['class' => 'js-datepicker', 'readonly'=>'readonly'] ])
                     ->add('date_to', DateType::class, ['label'=>'Publication date to:',
                                         'required' => false,
                                         'widget' => 'single_text',
                                         'html5' => false,
-                                        'attr' => ['class' => 'datepicker', 'readonly'=>'readonly'] ])
+                                        'attr' => ['class' => 'js-datepicker', 'readonly'=>'readonly'] ])
                     ->add('send', SubmitType::class, ['label'=>'Show users, who love these products'])
                     ->getForm();
 
@@ -264,12 +264,12 @@ class PersonLikeProductModuleController extends AbstractController
                                         'required' => false,
                                         'widget' => 'single_text',
                                         'html5' => false,
-                                        'attr' => ['class' => 'datepicker', 'readonly'=>'readonly'] ])
+                                        'attr' => ['class' => 'js-datepicker', 'readonly'=>'readonly'] ])
                     ->add('date_to', DateType::class, ['label'=>'Publication date to:',
                                         'required' => false,
                                         'widget' => 'single_text',
                                         'html5' => false,
-                                        'attr' => ['class' => 'datepicker', 'readonly'=>'readonly'] ])
+                                        'attr' => ['class' => 'js-datepicker', 'readonly'=>'readonly'] ])
                     ->add('send', SubmitType::class, ['label'=>'Show products'])
                     ->getForm();
 

@@ -41,13 +41,13 @@ class ProductModuleController extends AbstractController
                                                 'required' => false,
                                                 'widget' => 'single_text',
                                                 'html5' => false,
-                                                'attr' => ['class' => 'datepicker', 'readonly'=>'readonly'],
+                                                'attr' => ['class' => 'js-datepicker', 'readonly'=>'readonly' ],
                                                 ])
                     ->add('date_to', DateType::class, ['label'=>'Date to:',
                                                 'required' => false,
                                                 'widget' => 'single_text',
                                                 'html5' => false,
-                                                'attr' => ['class' => 'datepicker', 'readonly'=>'readonly'],
+                                                'attr' => ['class' => 'js-datepicker', 'readonly'=>'readonly'],
                                                 ])
                     ->add('send', SubmitType::class, ['label'=>'Show the chosen products'])
                     ->getForm();
@@ -126,7 +126,7 @@ class ProductModuleController extends AbstractController
                                 'label'=>'Date of publication',
                                 'widget' => 'single_text',
                                 'html5' => false,
-                                'attr' => ['class' => 'datepicker', 'readonly'=>'readonly'] ]) //adding jQuery datepicker
+                                'attr' => ['class' => 'js-datepicker', 'readonly'=>'readonly'] ]) //adding  datepicker
                             ->add('save', SubmitType::class, ['label'=> 'Save changes']);
     
     //button for deleting product    
@@ -202,7 +202,7 @@ class ProductModuleController extends AbstractController
                                 'label'=>'Date of publication',
                                 'widget' => 'single_text',
                                 'html5' => false,
-                                'attr' => ['class' => 'datepicker', 'readonly'=>'readonly'] ])
+                                'attr' => ['class' => 'js-datepicker', 'readonly'=>'readonly'] ])
                 ->add('save', SubmitType::class, ['label'=>'Add the product']);
          
         $form->handleRequest($request);
