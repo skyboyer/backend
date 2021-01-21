@@ -1,7 +1,11 @@
 {% extends 'base.html.twig' %}
 
 {% block stylesheets1 %}
-    <link rel="stylesheet" href="/css/person_like_product_edit.css">
+
+    <link rel="stylesheet" href="/css/person_like_product_edit1.css">
+    
+      
+
 {% endblock %}
 
 {% block content %}  
@@ -23,7 +27,7 @@
                         <td>{{productLiked.getName }}</td>
                         <td>{{productLiked.getInfo}}</td>
                         <td>{{productLiked.getpublicdate|date('Y-m-d')}}</td>
-                        <td>  <a class="button" href="{{ path('person_like_product_delete', {id_person: person.id, id_product: productLiked.getId }) }}"><span> &#8722   </span> </a> </td> 
+                        <td>  <a class="button" href="{{ path('person_like_product_delete', {id_person: person.id, id_product: productLiked.getId }) }}"><span id="plus_minus"> &#8722   </span> </a> </td> 
                     </tr>
                 {% endfor %} 
             
@@ -58,7 +62,7 @@
                                         {% if product in productsLiked %}
                                                 Already liked!
                                             {% else %}
-                                                <a class="button" href="{{ path('person_like_product_add', {id_person: person.id, id_product: product.id}) }}"> <span> +  </span> </a> 
+                                                <a class="button" href="{{ path('person_like_product_add', {id_person: person.id, id_product: product.id}) }}"> <span id="plus_minus"> +  </span> </a> 
                                         {% endif %}
                                     
                                     </td> 
@@ -73,5 +77,9 @@
 
     <br><br><a href="{{ path('person_like_product') }}">BACK TO COMMON LIST OF PREFERENCIES >> </a> 
 
-{% endblock %}  
+{% endblock %} 
+
+
+
+
 

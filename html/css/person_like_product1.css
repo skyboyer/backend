@@ -36,7 +36,7 @@ input, select, option {
 }
 table {
 	margin-bottom: 10px;
-	border-collapse: collapse;
+	border-collapse: collapse; 
 }
 td, th {
 	border: 1px solid green;
@@ -46,13 +46,17 @@ td, th {
 #form_person {
 	float:left;
 	padding: 25px;
+	color:black;
 }
 #form_product {
 	float:left;
 	padding: 25px;
 }
 #person_state > * {
-	width: 50px;
+	width: 30px;
+}
+span {
+	color: black;
 }
 
 

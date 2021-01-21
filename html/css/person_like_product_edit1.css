@@ -51,11 +51,13 @@ td, th {
 	float:left;
 	padding: 25px;
 }
-span {
+#plus_minus {
 	color:red;
 	font-weight: bold;
 	font-size: 200%;
-	
+}
+span {
+	color: black;
 }
 a {
 	text-decoration: none;

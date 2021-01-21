@@ -1,7 +1,9 @@
 {% extends 'base.html.twig' %}
 
 {% block stylesheets1 %}
-    <link rel="stylesheet" href="/css/person_like_product.css">
+    <link rel="stylesheet" href="/css/person_like_product1.css">
+
+   
 {% endblock %}
 
 {% block content %}  
@@ -23,7 +25,7 @@
     <button type="button"><a class="button" href="{{ path('person_like_product') }}">RESET</a></button><br>
     
     {% if match == 0 %}
-    {% elseif match == 1 and products is not empty %} 
+    {% elseif match == 1 %} 
         <h1>Chosen users:</h1>
         CRITERIA:<br>
         Login: {% if login is  not null %} {{login}}, {% else %} all, {% endif %} <br>  
@@ -33,96 +35,104 @@
                     {% for state in states %}
                         {{ state }},
                     {% endfor %} 
-                {% else %} all. 
+                {% else %} all. <br>
                 {% endif %}
 
-        <table>
-            <tr>
-                <th>Login</th><th>Name, Surname</th><th>State</th> <th>Products, which this user likes </th> 
-            </tr>
-            <tr>   
-                {% for person in persons %} 
+            {% if match == 1 and products is not empty %} 
+                <table>
                     <tr>
-                        <td>{{person.login}}</td>
-                        <td>{{person.iname}} {{person.fname}} <a href="{{ path('person_like_product_edit', {id_person: person.id}) }}">edit the user's likes</a> </td>
-                        <td>{{person.getStateString }}</td>
-                        <td>
-                            {% for persprod in person.getPersonHaveProducts %}
-                                {{ persprod.getProduct.getName }} <br>
-                            {% endfor %}   
-                        </td>
+                        <th>Login</th><th>Name, Surname</th><th>State</th> <th>Products, which this user likes </th> 
                     </tr>
-                {% endfor %}
-            </tr>
-        <table><br>
-           
-        <h1>Products, which these users like:</h1>
-            <table>
-                <tr>
-                    <th>Name of the product</th> <th>Info</th> <th>Publication date</th> <th>Who likes the product </th> 
-                </tr>
-                    
-                {% for product in products %} 
-                    <tr>
-                        <td>{{product.name}} <a href="{{ path('product_like_person_edit', {id_product: product.id}) }}">edit the product's lovers>></a> </td> <td>{{product.info}}</td> <td>{{product.publicdate|date('Y-m-d')}}</td> 
-                        <td>
-                            {% for prodpers in product.getProductHavePersons %}
-                                {{ prodpers.getPerson.getIName }}  {{ prodpers.getPerson.getFName }}<br>
-                            {% endfor %}   
-                        </td>
+                    <tr>   
+                        {% for person in persons %} 
+                            <tr>
+                                <td>{{person.login}}</td>
+                                <td>{{person.iname}} {{person.fname}} <a href="{{ path('person_like_product_edit', {id_person: person.id}) }}">edit the user's likes</a> </td>
+                                <td>{{person.getStateString }}</td>
+                                <td>
+                                    {% for persprod in person.getPersonHaveProducts %}
+                                        {{ persprod.getProduct.getName }} <br>
+                                    {% endfor %}   
+                                </td>
+                            </tr>
+                        {% endfor %}
                     </tr>
-                {% endfor %}   
-            </table> 
-
-    {% elseif  match == 2 and persons is not empty %}
+                <table><br>
+                
+                <h1>Products, which these users like:</h1>
+                    <table>
+                        <tr>
+                            <th>Name of the product</th> <th>Info</th> <th>Publication date</th> <th>Who likes the product </th> 
+                        </tr>
+                            
+                        {% for product in products %} 
+                            <tr>
+                                <td>{{product.name}} <a href="{{ path('product_like_person_edit', {id_product: product.id}) }}">edit the product's lovers>></a> </td> <td>{{product.info}}</td> <td>{{product.publicdate|date('Y-m-d')}}</td> 
+                                <td>
+                                    {% for prodpers in product.getProductHavePersons %}
+                                        {{ prodpers.getPerson.getIName }}  {{ prodpers.getPerson.getFName }}<br>
+                                    {% endfor %}   
+                                </td>
+                            </tr>
+                        {% endfor %}   
+                    </table> 
+            {% else %}
+                <h1>NO MATCH!</h1>
+            {% endif %} 
+            
+    {% elseif  match == 2 %}
         <h1>Chosen products:</h1>
         CRITERIA:<br>
         Name: {% if name is not null %} {{name}}, {% else %} all, {% endif %} <br>  
-        Public date from:{% if date_from is not null %} {{date_from|date('Y-m-d')}}, {% else %} all, {% endif %} <br> 
-        Public date to: {% if date_to is not null %} {{date_to|date('Y-m-d')}}. {% else %} all. {% endif %}
-
-        <table>
-            <tr>
-                <th>Name of the product</th> <th>Info</th> <th>Publication date</th> <th>Who likes the product </th> 
-            </tr>
-                {% for product in products %} 
+        Public date from:{% if date_from is not null %} {{date_from}}, {% else %} all, {% endif %} <br> 
+        Public date to: {% if date_to is not null %} {{date_to}}. {% else %} all. {% endif %}
+    
+            {% if  match == 2 and persons is not empty %}  
+                <table>
                     <tr>
-                        <td>{{product.name}} <a href="{{ path('product_like_person_edit', {id_product: product.id}) }}">edit the product's lovers>></a> </td> <td>{{product.info}}</td> <td>{{product.publicdate|date('Y-m-d')}}</td> 
-                        <td>
-                            {% for prodpers in product.getProductHavePersons %}
-                                {{ prodpers.getPerson.getIName }}  {{ prodpers.getPerson.getFName }}<br>
-                            {% endfor %}   
-                        </td>
+                        <th>Name of the product</th> <th>Info</th> <th>Publication date</th> <th>Who likes the product </th> 
                     </tr>
-                {% endfor %}   
-        </table><br>
-        
-            <h1>Users, which like these products:</h1>
-            <table>
-                <tr>
-                    <th>Login</th><th>Name, Surname</th><th>State</th> <th>Products, which this user likes </th> 
-                </tr>
+                        {% for product in products %} 
+                            <tr>
+                                <td>{{product.name}} <a href="{{ path('product_like_person_edit', {id_product: product.id}) }}">edit the product's lovers>></a> </td> <td>{{product.info}}</td> <td>{{product.publicdate|date('Y-m-d')}}</td> 
+                                <td>
+                                    {% for prodpers in product.getProductHavePersons %}
+                                        {{ prodpers.getPerson.getIName }}  {{ prodpers.getPerson.getFName }}<br>
+                                    {% endfor %}   
+                                </td>
+                            </tr>
+                        {% endfor %}   
+                </table><br>
                 
-                {% for person in persons %} 
+                    <h1>Users, which like these products:</h1>
+                    <table>
                         <tr>
-                            <td>{{person.login}}</td>
-                            <td>{{person.iname}} {{person.fname}} <a href="{{ path('person_like_product_edit', {id_person: person.id}) }}">edit the user's likes</a> </td>
-                            <td>{{person.getStateString }}</td>
-                            <td>
-                                {% for persprod in person.getPersonHaveProducts %}
-                                    {{ persprod.getProduct.getName }} <br>
-                                {% endfor %}   
-                            </td>
+                            <th>Login</th><th>Name, Surname</th><th>State</th> <th>Products, which this user likes </th> 
                         </tr>
-                {% endfor %}   
-            </table>
+                        
+                        {% for person in persons %} 
+                                <tr>
+                                    <td>{{person.login}}</td>
+                                    <td>{{person.iname}} {{person.fname}} <a href="{{ path('person_like_product_edit', {id_person: person.id}) }}">edit the user's likes</a> </td>
+                                    <td>{{person.getStateString }}</td>
+                                    <td>
+                                        {% for persprod in person.getPersonHaveProducts %}
+                                            {{ persprod.getProduct.getName }} <br>
+                                        {% endfor %}   
+                                    </td>
+                                </tr>
+                        {% endfor %}   
+                    </table>
+            {% else %}
+                <h1>NO MATCH!</h1>
+            {% endif %} 
         
-    {% else %}
-        No match!
     {% endif %} 
 
     <br><br> <a href="{{ path('product') }}">GO TO ADMINISTRATING OF PRODUCTS >> <br></a>
     <a href="{{ path('person') }}">GO TO ADMINISTRATING OF PERSONS >> <br></a>
 
 {% endblock %}  
+
+
 

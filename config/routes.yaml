@@ -17,7 +17,7 @@ product_edit:
 
 product_delete:
             path: /products/delete/{id}
-            controller: App\Controller\ProductEditController::product_delete
+            controller: App\Controller\ProductModuleController::product_delete
 
 person:
             path: /person

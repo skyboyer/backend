@@ -46,19 +46,28 @@ class PersonLikeProductModuleController extends AbstractController
                                     'class'=> Person::class,
                                     'choice_label' => 'login',
                                     'required' => false,
-                                    'mapped' => false])
+                                    'mapped' => false,
+                                    'attr' => array(
+                                        'class'=>'js-select2'
+                                    ), ])
                     ->add('i_name', EntityType::class, [
                                     'label'=>'Name:',
                                     'class'=> Person::class,
                                     'choice_label' => 'i_name',
                                     'required' => false,
-                                    'mapped' => false])
+                                    'mapped' => false,
+                                    'attr' => array(
+                                        'class'=>'js-select2'
+                                    ), ])
                     ->add('f_name', EntityType::class, [
                                     'label'=>'Surname:',
                                     'class'=> Person::class,
                                     'choice_label' => 'f_name',
                                     'required' => false,
-                                    'mapped' => false])
+                                    'mapped' => false,
+                                    'attr' => array(
+                                        'class'=>'js-select2'
+                                    ), ])
                     ->add('state', ChoiceType::class, 
                                     ['label'=>'Choose the State:',
                                      'choices'=> [
@@ -66,7 +75,6 @@ class PersonLikeProductModuleController extends AbstractController
                                         'Banned' => Person::BANNED,
                                         'Deleted' => Person::DELETED],
                                     'placeholder'=>"",
-                                    //'required' => false,
                                     'expanded'=>true, 'multiple'=>true,
                                     'data' => [Person::ACTIVE],
                                     'mapped' => false])  
@@ -78,13 +86,20 @@ class PersonLikeProductModuleController extends AbstractController
                                     'label'=>'Name:',
                                     'class'=> Product::class,
                                     'choice_label' => 'name',
-                                    'required' => false ])
+                                    'required' => false,
+                                    'attr' => array(
+                                        'class'=>'js-select2'
+                                    ), ])
                     ->add('date_from', DateType::class, ['label'=>'Publication date from:',
                                         'required' => false,
-                                        'widget' => 'single_text'])
+                                        'widget' => 'single_text',
+                                        'html5' => false,
+                                        'attr' => ['class' => 'datepicker', 'readonly'=>'readonly'] ])
                     ->add('date_to', DateType::class, ['label'=>'Publication date to:',
                                         'required' => false,
-                                        'widget' => 'single_text'])
+                                        'widget' => 'single_text',
+                                        'html5' => false,
+                                        'attr' => ['class' => 'datepicker', 'readonly'=>'readonly'] ])
                     ->add('send', SubmitType::class, ['label'=>'Show users, who love these products'])
                     ->getForm();
 
@@ -125,7 +140,7 @@ class PersonLikeProductModuleController extends AbstractController
                 $queryBuilder= $queryBuilder->setParameter('login', $login)
                                             -> andWhere('pers.login = :login');
             }
-            if (isset($states)) {
+            if (!empty($states)) {
                 $queryBuilder= $queryBuilder->setParameter('states', $states)
                                             -> andWhere('pers.state in (:states)');
             }  
@@ -149,7 +164,7 @@ class PersonLikeProductModuleController extends AbstractController
                 $queryBuilder= $queryBuilder->setParameter('login', $login)
                                         -> andWhere('p.login = :login');
             }
-            if (isset($states)) {
+            if (!empty($states)) {
                 $queryBuilder= $queryBuilder->setParameter('states', $states)
                                             -> andWhere('p.state in (:states)');
             }
@@ -192,6 +207,7 @@ class PersonLikeProductModuleController extends AbstractController
             ]);
         }
 
+    //filter of products to show their lovers
         if ($form_product->isSubmitted() ) {
             
             $data = $form_product->getData();
@@ -206,11 +222,12 @@ class PersonLikeProductModuleController extends AbstractController
                                             -> join ('pers.PersonHaveProducts', 'persprod')
                                             -> join ('persprod.product', 'prod');
             if (isset($date_from) ) {
-                $date_from->modify('-1 second');
+                $date_from=date_format($date_from, 'Y-m-d');
                 $queryBuilder=$queryBuilder->setParameter('date_from', $date_from)
                                             ->andwhere ('prod.public_date >= :date_from');
             }
             if (isset($date_to) ) {
+                $date_to=date_format($date_to, 'Y-m-d');
                 $queryBuilder=$queryBuilder->setParameter('date_to', $date_to)
                                             ->andwhere ('prod.public_date<= :date_to');
             }  
@@ -221,6 +238,7 @@ class PersonLikeProductModuleController extends AbstractController
                                                        $queryBuilder-> expr()->lower('prod.name'), ':name') ) ;
             }
             $persons = $queryBuilder->getQuery()->getResult();
+            $personHaveProducts=$persons[0]->getPersonHaveProducts();
 
             $queryBuilder = $entityManager->createQueryBuilder()
                                             -> select('p')
@@ -241,8 +259,7 @@ class PersonLikeProductModuleController extends AbstractController
             $products = $queryBuilder->getQuery()->getResult();
             
             $match=2;
-            if (isset($date_from) ) $date_from->modify('+1 second');
-
+           
             $contents = $this->renderView('person_like_product/person_like_product.html.twig', [
                 
                 'form_person' => $form_person->createView(),
@@ -256,10 +273,8 @@ class PersonLikeProductModuleController extends AbstractController
                 'name' => $name,
                                     
             ]);
-
-            
+   
         } 
-                     
         return new Response ($contents);
         
     }
@@ -272,10 +287,8 @@ class PersonLikeProductModuleController extends AbstractController
         $personHaveProducts = $person->getPersonHaveProducts();
         
         $productsLiked = array();
-        $i=0;
         foreach ($personHaveProducts as $personHaveProduct) {
-            $productsLiked[$i]=$personHaveProduct->getProduct();
-            $i=$i+1;
+            array_push($productsLiked, $personHaveProduct->getProduct());
         }
 
         $form_product = $this->createFormBuilder()
@@ -284,13 +297,20 @@ class PersonLikeProductModuleController extends AbstractController
                                     'label'=>'Name:',
                                     'class'=> Product::class,
                                     'choice_label' => 'name',
-                                    'required' => false ])
+                                    'required' => false,
+                                    'attr' => array(
+                                        'class'=>'js-select2'
+                                    ), ])
                     ->add('date_from', DateType::class, ['label'=>'Publication date from:',
                                         'required' => false,
-                                        'widget' => 'single_text'])
+                                        'widget' => 'single_text',
+                                        'html5' => false,
+                                        'attr' => ['class' => 'datepicker', 'readonly'=>'readonly'] ])
                     ->add('date_to', DateType::class, ['label'=>'Publication date to:',
                                         'required' => false,
-                                        'widget' => 'single_text'])
+                                        'widget' => 'single_text',
+                                        'html5' => false,
+                                        'attr' => ['class' => 'datepicker', 'readonly'=>'readonly'] ])
                     ->add('send', SubmitType::class, ['label'=>'Show products'])
                     ->getForm();
 
@@ -313,28 +333,23 @@ class PersonLikeProductModuleController extends AbstractController
                                         -> select('p')
                                         -> from ('App\Entity\Product', 'p')
                                         -> orderBy('p.public_date', 'ASC');
-                                            
-
             if (isset($date_from) ) {
-               
-                $date_from->modify('-1 second');
+                $date_from=date_format($date_from, 'Y-m-d');
                 $queryBuilder=$queryBuilder->setParameter('date_from', $date_from)
                                             ->andwhere ('p.public_date >= :date_from');
-                                   
             }
                                                                            
             if (isset($date_to) ) {
+                $date_to=date_format($date_to, 'Y-m-d');
                 $queryBuilder=$queryBuilder->setParameter('date_to', $date_to)
                                             ->andwhere ('p.public_date<= :date_to');
             }  
-
             if (isset($name)) {
                 $name=$name->getName();
                 $queryBuilder=$queryBuilder->setParameter('name', strtolower($name))
                                             ->andwhere ($queryBuilder->expr()->eq(
                                                        $queryBuilder-> expr()->lower('p.name'), ':name') ) ;
             }
-
             $products = $queryBuilder->getQuery()->getResult();
 
             
@@ -342,23 +357,16 @@ class PersonLikeProductModuleController extends AbstractController
             $requestForm=$request->query->get('form');
             $this->session->set('sessionForm', $requestForm  );
             
-            if (isset($date_from) ) $date_from->modify('+1 second');
-
             $contents = $this->renderView('person_like_product_edit/person_like_product_edit.html.twig', [
                 
                 'form_product' => $form_product->createView(),
                 'products' => $products,
                 'person' => $person,
 
-                'date_from' => $date_from,
-                'date_to' => $date_to,
-                'name' => $name,
-                
                 'productsLiked' => $productsLiked,
                     
             ]);
-
-            
+   
         } 
         else {
             $contents = $this->renderView('person_like_product_edit/person_like_product_edit.html.twig', [
@@ -445,17 +453,26 @@ class PersonLikeProductModuleController extends AbstractController
                                     'label'=>'Login (ATTENTION ON REGISTER!):',
                                     'class'=> Person::class,
                                     'choice_label' => 'login',
-                                    'required' => false])
+                                    'required' => false,
+                                    'attr' => array(
+                                        'class'=>'js-select2'
+                                    ), ])
                                 ->add('i_name', EntityType::class, [
                                     'label'=>'Name:',
                                     'class'=> Person::class,
                                     'choice_label' => 'i_name',
-                                    'required' => false])
+                                    'required' => false,
+                                    'attr' => array(
+                                        'class'=>'js-select2'
+                                    ), ])
                                 ->add('f_name', EntityType::class, [
                                     'label'=>'Surname:',
                                     'class'=> Person::class,
                                     'choice_label' => 'f_name',
-                                    'required' => false])
+                                    'required' => false,
+                                    'attr' => array(
+                                        'class'=>'js-select2'
+                                    ), ])
                                 ->add('state', ChoiceType::class, ['label'=>'User\'s state:',
                                                             'placeholder'=>"",
                                                             //'required' => true,
@@ -507,7 +524,7 @@ class PersonLikeProductModuleController extends AbstractController
                 $queryBuilder= $queryBuilder->setParameter('login', $login)
                                         -> andWhere('p.login = :login');
             }
-            if (isset($state)) {
+            if (!empty($state)) {
                 $queryBuilder= $queryBuilder->setParameter('state', $state)
                                             -> andWhere('p.state in (:state)');
             }
@@ -522,15 +539,9 @@ class PersonLikeProductModuleController extends AbstractController
                 'form_person' => $form_person->createView(),
                 'persons' => $persons,
                 'product' => $product,
-
-               // 'login'=> $login,
-                //'i_name'=> $i_name,
-                //'f_name'=> $f_name,
-                                               
                 'personsLoved' => $personsLoved,
             ]);
-
-            
+ 
         } 
         else {
             $contents = $this->renderView('product_like_person_edit/product_like_person_edit.html.twig', [

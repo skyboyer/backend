@@ -39,10 +39,16 @@ class ProductModuleController extends AbstractController
                                         'required' => false])
                     ->add('date_from', DateType::class, ['label'=>'Date from:',
                                                 'required' => false,
-                                                'widget' => 'single_text'])
+                                                'widget' => 'single_text',
+                                                'html5' => false,
+                                                'attr' => ['class' => 'datepicker', 'readonly'=>'readonly'],
+                                                ])
                     ->add('date_to', DateType::class, ['label'=>'Date to:',
                                                 'required' => false,
-                                                'widget' => 'single_text'])
+                                                'widget' => 'single_text',
+                                                'html5' => false,
+                                                'attr' => ['class' => 'datepicker', 'readonly'=>'readonly'],
+                                                ])
                     ->add('send', SubmitType::class, ['label'=>'Show the chosen products'])
                     ->getForm();
 
@@ -60,27 +66,24 @@ class ProductModuleController extends AbstractController
                                             -> select('p')
                                             -> from ('App\Entity\Product', 'p')
                                             -> orderBy('p.public_date', 'ASC');
-                                            
-
             if (isset($date_from) ) {
-                $date_from->modify('-1 second');
+                $date_from=date_format($date_from, 'Y-m-d');
                 $queryBuilder=$queryBuilder->setParameter('date_from', $date_from)
                                             ->andwhere ('p.public_date >= :date_from');
             }
                                            
             if (isset($date_to) ) {
+                $date_to=date_format($date_to, 'Y-m-d');
                 $queryBuilder=$queryBuilder->setParameter('date_to', $date_to)
                                             ->andwhere ('p.public_date<= :date_to');
             }
-            
             if (isset($name)) {
                 $queryBuilder=$queryBuilder->setParameter('name', strtolower($name))
                                             ->andwhere ($queryBuilder->expr()->eq(
                                                        $queryBuilder-> expr()->lower('p.name'), ':name') ) ;
             }
-   
             $products = $queryBuilder->getQuery()->getResult();
- 
+
         }
 
         else {
@@ -117,7 +120,8 @@ class ProductModuleController extends AbstractController
                             ->add('public_date', DateType::class, [
                                 'label'=>'Date of publication',
                                 'widget' => 'single_text',
-                                ] )
+                                'html5' => false,
+                                'attr' => ['class' => 'datepicker', 'readonly'=>'readonly'] ])
                             ->add('save', SubmitType::class, ['label'=> 'Save changes']);
     
             $form2 = $this->createFormBuilder()
@@ -189,10 +193,9 @@ class ProductModuleController extends AbstractController
                 ->add('public_date', DateType::class, [
                                 'label'=>'Date of publication',
                                 'widget' => 'single_text',
-                                                 
-                                
-                                ] )
-            ->add('save', SubmitType::class, ['label'=>'Add the product']);
+                                'html5' => false,
+                                'attr' => ['class' => 'datepicker', 'readonly'=>'readonly'] ])
+                ->add('save', SubmitType::class, ['label'=>'Add the product']);
          
         $form->handleRequest($request);
        
