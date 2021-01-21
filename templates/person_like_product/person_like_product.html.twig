@@ -27,7 +27,6 @@
     {% if match == 0 %}
     {% elseif match == 1 %} 
         <h1>Chosen users:</h1>
-        CRITERIA:<br>
         Login: {% if login is  not null %} {{login}}, {% else %} all, {% endif %} <br>  
         Name: {% if i_name is  not null %} {{i_name}}, {% else %} all, {% endif %} <br>  
         Surname:{% if f_name is  not null %} {{f_name}}, {% else %} all, {% endif %} <br> 
@@ -37,8 +36,8 @@
                     {% endfor %} 
                 {% else %} all. <br>
                 {% endif %}
-
-            {% if match == 1 and products is not empty %} 
+        <h1>Their likes:</h1>
+            {% if match == 1 and persons is not empty %} 
                 <table>
                     <tr>
                         <th>Login</th><th>Name, Surname</th><th>State</th> <th>Products, which this user likes </th> 
@@ -59,35 +58,20 @@
                     </tr>
                 <table><br>
                 
-                <h1>Products, which these users like:</h1>
-                    <table>
-                        <tr>
-                            <th>Name of the product</th> <th>Info</th> <th>Publication date</th> <th>Who likes the product </th> 
-                        </tr>
-                            
-                        {% for product in products %} 
-                            <tr>
-                                <td>{{product.name}} <a href="{{ path('product_like_person_edit', {id_product: product.id}) }}">edit the product's lovers>></a> </td> <td>{{product.info}}</td> <td>{{product.publicdate|date('Y-m-d')}}</td> 
-                                <td>
-                                    {% for prodpers in product.getProductHavePersons %}
-                                        {{ prodpers.getPerson.getIName }}  {{ prodpers.getPerson.getFName }}<br>
-                                    {% endfor %}   
-                                </td>
-                            </tr>
-                        {% endfor %}   
-                    </table> 
+               
             {% else %}
                 <h1>NO MATCH!</h1>
             {% endif %} 
             
     {% elseif  match == 2 %}
         <h1>Chosen products:</h1>
-        CRITERIA:<br>
+        
         Name: {% if name is not null %} {{name}}, {% else %} all, {% endif %} <br>  
         Public date from:{% if date_from is not null %} {{date_from}}, {% else %} all, {% endif %} <br> 
         Public date to: {% if date_to is not null %} {{date_to}}. {% else %} all. {% endif %}
     
-            {% if  match == 2 and persons is not empty %}  
+        <h1>Their lovers:</h1>   
+            {% if  match == 2 and products is not empty %}  
                 <table>
                     <tr>
                         <th>Name of the product</th> <th>Info</th> <th>Publication date</th> <th>Who likes the product </th> 
@@ -103,26 +87,7 @@
                             </tr>
                         {% endfor %}   
                 </table><br>
-                
-                    <h1>Users, which like these products:</h1>
-                    <table>
-                        <tr>
-                            <th>Login</th><th>Name, Surname</th><th>State</th> <th>Products, which this user likes </th> 
-                        </tr>
-                        
-                        {% for person in persons %} 
-                                <tr>
-                                    <td>{{person.login}}</td>
-                                    <td>{{person.iname}} {{person.fname}} <a href="{{ path('person_like_product_edit', {id_person: person.id}) }}">edit the user's likes</a> </td>
-                                    <td>{{person.getStateString }}</td>
-                                    <td>
-                                        {% for persprod in person.getPersonHaveProducts %}
-                                            {{ persprod.getProduct.getName }} <br>
-                                        {% endfor %}   
-                                    </td>
-                                </tr>
-                        {% endfor %}   
-                    </table>
+             
             {% else %}
                 <h1>NO MATCH!</h1>
             {% endif %} 

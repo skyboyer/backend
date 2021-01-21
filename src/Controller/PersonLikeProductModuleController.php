@@ -119,48 +119,22 @@ class PersonLikeProductModuleController extends AbstractController
 
             $entityManager = $this->getDoctrine()->getManager();
             $queryBuilder = $entityManager->createQueryBuilder()
-                                            -> select('prod', 'prodpers', 'pers')
-                                            -> from ('App\Entity\Product', 'prod')
-                                            -> join ('prod.ProductHavePersons', 'prodpers')
-                                            -> join ('prodpers.person', 'pers');
-            if (isset($i_name)) {
-                $i_name=$i_name->getIName();
-                $queryBuilder=$queryBuilder->setParameter('i_name', strtolower($i_name))
-                                            -> andwhere ($queryBuilder->expr()->eq(
-                                                        $queryBuilder-> expr()->lower('pers.i_name'), ':i_name') ) ;
-            }
-            if (isset($f_name)) {
-                $f_name=$f_name->getFName();
-                $queryBuilder=$queryBuilder->setParameter('f_name', strtolower($f_name))
-                                            -> andwhere ( $queryBuilder->expr()->eq(
-                                                          $queryBuilder-> expr()->lower('pers.f_name'), ':f_name') ) ;
-            }  
-            if (isset($login)) {
-                $login=$login->getLogin();
-                $queryBuilder= $queryBuilder->setParameter('login', $login)
-                                            -> andWhere('pers.login = :login');
-            }
-            if (!empty($states)) {
-                $queryBuilder= $queryBuilder->setParameter('states', $states)
-                                            -> andWhere('pers.state in (:states)');
-            }  
-            $products = $queryBuilder->getQuery()->getResult();
-
-
-            $queryBuilder = $entityManager->createQueryBuilder()
                                             -> select('p')
                                             -> from ('App\Entity\Person', 'p');
             if (isset($i_name)) {
+                $i_name=$i_name->getIName();
                 $queryBuilder=$queryBuilder->setParameter('i_name', strtolower($i_name))
                                             -> andwhere ($queryBuilder->expr()->eq(
                                                         $queryBuilder-> expr()->lower('p.i_name'), ':i_name') ) ;
             }
             if (isset($f_name)) {
+                $f_name=$f_name->getFName();
                 $queryBuilder=$queryBuilder->setParameter('f_name', strtolower($f_name))
                                             -> andwhere ( $queryBuilder->expr()->eq(
                                                           $queryBuilder-> expr()->lower('p.f_name'), ':f_name') ) ;
             }
             if (isset($login)) {
+                $login=$login->getLogin();
                 $queryBuilder= $queryBuilder->setParameter('login', $login)
                                         -> andWhere('p.login = :login');
             }
@@ -207,7 +181,6 @@ class PersonLikeProductModuleController extends AbstractController
             ]);
         }
 
-    //filter of products to show their lovers
         if ($form_product->isSubmitted() ) {
             
             $data = $form_product->getData();
@@ -217,41 +190,20 @@ class PersonLikeProductModuleController extends AbstractController
 
             $entityManager = $this->getDoctrine()->getManager();
             $queryBuilder = $entityManager->createQueryBuilder()
-                                            -> select('pers', 'persprod', 'prod')
-                                            -> from ('App\Entity\Person', 'pers')
-                                            -> join ('pers.PersonHaveProducts', 'persprod')
-                                            -> join ('persprod.product', 'prod');
-            if (isset($date_from) ) {
-                $date_from=date_format($date_from, 'Y-m-d');
-                $queryBuilder=$queryBuilder->setParameter('date_from', $date_from)
-                                            ->andwhere ('prod.public_date >= :date_from');
-            }
-            if (isset($date_to) ) {
-                $date_to=date_format($date_to, 'Y-m-d');
-                $queryBuilder=$queryBuilder->setParameter('date_to', $date_to)
-                                            ->andwhere ('prod.public_date<= :date_to');
-            }  
-            if (isset($name)) {
-                $name=$name->getName();
-                $queryBuilder=$queryBuilder->setParameter('name', strtolower($name))
-                                            ->andwhere ($queryBuilder->expr()->eq(
-                                                       $queryBuilder-> expr()->lower('prod.name'), ':name') ) ;
-            }
-            $persons = $queryBuilder->getQuery()->getResult();
-            $personHaveProducts=$persons[0]->getPersonHaveProducts();
-
-            $queryBuilder = $entityManager->createQueryBuilder()
                                             -> select('p')
                                             -> from ('App\Entity\Product', 'p');
             if (isset($date_from) ) {
+                $date_from=date_format($date_from, 'Y-m-d');
                 $queryBuilder=$queryBuilder->setParameter('date_from', $date_from)
                                             ->andwhere ('p.public_date >= :date_from');
             }
             if (isset($date_to) ) {
+                $date_to=date_format($date_to, 'Y-m-d');
                 $queryBuilder=$queryBuilder->setParameter('date_to', $date_to)
                                             ->andwhere ('p.public_date<= :date_to');
             }
             if (isset($name)) {
+                $name=$name->getName();
                 $queryBuilder=$queryBuilder->setParameter('name', strtolower($name))
                                             ->andwhere ($queryBuilder->expr()->eq(
                                                        $queryBuilder-> expr()->lower('p.name'), ':name') ) ;
