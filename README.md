@@ -1,4 +1,5 @@
 Test exercise for PHP Developer position
+You can launch the project with 'docker-compose up' command. 
 
 Initial task: 
 
