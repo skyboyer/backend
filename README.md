@@ -1,5 +1,5 @@
 Test exercise for PHP Developer position
-You can launch the project with 'docker-compose up' command. 
+You can launch the project with 'docker-compose up' command. All url are accessible at localhost/index.php/<url>
 
 Initial task: 
 
