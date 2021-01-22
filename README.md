@@ -2,7 +2,7 @@ Test exercise for PHP Developer position
 
 Initial task: 
 
-Na podstawie diagramu EER, należy wykonać aplikację z funkcjami:
+Na podstawie diagramu EER (plik schema.mwb), należy wykonać aplikację z funkcjami:
 
 Część 1 - moduł “user”
 
