@@ -171,14 +171,11 @@ class ProductModuleController extends AbstractController
        
     public function product_delete ($id)
     {
-        $productManager = $this->getDoctrine()->getManager();
-        $product = $productManager->getRepository(Product::class)->find($id);
+       
         
-    //remove product from DB
-        $productManager->remove($product);
-        $productManager->flush();
-    // remove products relations
-        $personLikeProductManager = $this->getDoctrine()->getManager();
+    // remove product's relations (without cascade)
+        
+        /*$personLikeProductManager = $this->getDoctrine()->getManager();
         $personLikeProduct = $this->getDoctrine()->getRepository(PersonLikeProduct::class)
                                                 ->findBy ([
                                                     'product' => $id 
@@ -187,7 +184,14 @@ class ProductModuleController extends AbstractController
         foreach ($personLikeProduct as $persprod) {
             $personLikeProductManager->remove($persprod);
             $personLikeProductManager->flush();
-        }
+        }*/
+
+    //remove product from DB
+        $productManager = $this->getDoctrine()->getManager();
+        $product = $productManager->getRepository(Product::class)->find($id);
+        $productManager->remove($product);
+        $productManager->flush();
+
         return $this->redirectToRoute('product');
     }
 
