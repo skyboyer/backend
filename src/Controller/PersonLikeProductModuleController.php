@@ -146,6 +146,54 @@ class PersonLikeProductModuleController extends AbstractController
                                             -> andWhere('p.state in (:states)');
             }
             $persons = $queryBuilder->getQuery()->getResult();
+
+/*  !!! query with two joins!! get $products_array that has assosiated persons:
+
+ if ($form_person->isSubmitted() ) {
+            $personManager = $this->getDoctrine()->getManager(); //проверить надо ли эта часть!!
+            $personManager->persist ($person);
+           
+            $login=$form_person->get('login')->getData();
+            $i_name=$form_person->get('i_name')->getData();
+            $f_name=$form_person->get('f_name')->getData();
+            $state=$person->getState();
+
+            $entityManager = $this->getDoctrine()->getManager();
+            $queryBuilder = $entityManager->createQueryBuilder()
+                                            -> select('prod', 'prodpers', 'pers')
+                                            -> from ('App\Entity\Product', 'prod')
+                                            -> join ('prod.ProductHavePersons', 'prodpers')
+                                            -> join ('prodpers.person', 'pers');
+                                            //-> orderBy('p.state', 'ASC');
+
+            if (isset($i_name)) {
+                $i_name=$i_name->getIName();
+                $queryBuilder=$queryBuilder->setParameter('i_name', strtolower($i_name))
+                                            -> andwhere ($queryBuilder->expr()->eq(
+                                                        $queryBuilder-> expr()->lower('pers.i_name'), ':i_name') ) ;
+            }
+
+            if (isset($f_name)) {
+                $f_name=$f_name->getFName();
+                $queryBuilder=$queryBuilder->setParameter('f_name', strtolower($f_name))
+                                            -> andwhere ( $queryBuilder->expr()->eq(
+                                                          $queryBuilder-> expr()->lower('pers.f_name'), ':f_name') ) ;
+            }  
+
+            if (isset($login)) {
+                $login=$login->getLogin();
+                $queryBuilder= $queryBuilder->setParameter('login', $login)
+                                        -> andWhere('pers.login = :login');
+            }
+        
+            if (isset($state)) {
+                $queryBuilder= $queryBuilder->setParameter('state', $state)
+                                            -> andWhere('pers.state = :state');
+                $state=$person->getStateString();
+            }  
+
+            $products = $queryBuilder->getQuery()->getResult();
+*/
                         
             $match=1;  // shows, that form_person is submitted
 
