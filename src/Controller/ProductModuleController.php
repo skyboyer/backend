@@ -173,7 +173,7 @@ class ProductModuleController extends AbstractController
     {
        
         
-    // remove product's relations (without cascade)
+    // remove product's rela
         
         /*$personLikeProductManager = $this->getDoctrine()->getManager();
         $personLikeProduct = $this->getDoctrine()->getRepository(PersonLikeProduct::class)

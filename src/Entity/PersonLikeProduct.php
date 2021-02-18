@@ -23,7 +23,7 @@ class PersonLikeProduct
     /**
      * @ORM\Id
      * @ORM\ManyToOne(targetEntity=Product::class, inversedBy="ProductHavePersons")
-     * @ORM\JoinColumn(name="product_id", referencedColumnName="id", onDelete="CASCADE")
+     * @ORM\JoinColumn(onDelete="CASCADE")
      */
     private $product;
 
