@@ -27,6 +27,8 @@ use App\Repository\PersonLikeProductRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\EntityManagerInterface;
 
+use App\Controller\ProductModuleController;
+use Doctrine\ORM\Query\ResultSetMapping;
 
 class ProductModuleController extends AbstractController
 {
@@ -171,8 +173,6 @@ class ProductModuleController extends AbstractController
        
     public function product_delete ($id)
     {
-       
-        
     // remove product's relations without taking large quantities into account in iteration
         
         /*$personLikeProductManager = $this->getDoctrine()->getManager();
@@ -187,20 +187,36 @@ class ProductModuleController extends AbstractController
         }*/
 
     // remove product's relations with queryBuilder:
-    $personLikeProductManager = $this->getDoctrine()->getManager();
-    $queryBuilder = $personLikeProductManager->createQueryBuilder()
-                                                -> delete ('App\Entity\PersonLikeProduct','plp')
-                                                -> setParameter('product_id', $id)
-                                                -> andwhere ('plp.product = :product_id');
-    $query = $queryBuilder->getQuery();
-    $query->execute();
+
+       /* $personLikeProductManager = $this->getDoctrine()->getManager();
+        $queryBuilder = $personLikeProductManager->createQueryBuilder()
+                                                    -> delete ('App\Entity\PersonLikeProduct','plp')
+                                                    -> setParameter('product_id', $id)
+                                                    -> andwhere ('plp.product = :product_id');
+        $query = $queryBuilder->getQuery();
+        $query->execute();   */
+
+    // remove product's relations with raw SQL:
+        $SQLquery="DELETE FROM person_like_product AS plp WHERE  plp.product_id = :id";
+            
+        $entityManager = $this->getDoctrine()->getManager();
+        $stmt=$entityManager->getConnection()->prepare($SQLquery);
+        $stmt->bindValue('id', $id);
+        $stmt->execute();
 
 
-    //remove product from DB 
-        $productManager = $this->getDoctrine()->getManager();
+    //remove product from DB simple:
+       /* $productManager = $this->getDoctrine()->getManager();
         $product = $productManager->getRepository(Product::class)->find($id);
         $productManager->remove($product);
-        $productManager->flush();
+        $productManager->flush();   */
+
+    //remove product from DB with DQL:
+        $productManager = $this->getDoctrine()->getManager();
+        $DQLquery = $productManager->createQuery("  DELETE App\Entity\Product p 
+                                                    WHERE p.id = :id ");
+        $DQLquery->setParameter('id', $id);
+        $DQLquery->execute(); 
 
         return $this->redirectToRoute('product');
     }
