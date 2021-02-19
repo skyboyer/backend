@@ -173,7 +173,7 @@ class ProductModuleController extends AbstractController
     {
        
         
-    // remove product's rela
+    // remove product's relations without taking large quantities into account
         
         /*$personLikeProductManager = $this->getDoctrine()->getManager();
         $personLikeProduct = $this->getDoctrine()->getRepository(PersonLikeProduct::class)
@@ -186,7 +186,19 @@ class ProductModuleController extends AbstractController
             $personLikeProductManager->flush();
         }*/
 
-    //remove product from DB
+    // remove product's relations in queryBuilder:
+
+    $personLikeProductManager = $this->getDoctrine()->getManager();
+    $queryBuilder = $personLikeProductManager->createQueryBuilder()
+                                                -> delete ('App\Entity\PersonLikeProduct','plp')
+                                                -> setParameter('product_id', $id)
+                                                -> andwhere ('plp.product = :product_id');
+
+    $query = $queryBuilder->getQuery();
+    $query->execute();
+
+
+    //remove product from DB 
         $productManager = $this->getDoctrine()->getManager();
         $product = $productManager->getRepository(Product::class)->find($id);
         $productManager->remove($product);

@@ -41,9 +41,10 @@ class Product
     private $public_date;
 
     /**
-     * @ORM\OneToMany(targetEntity=PersonLikeProduct::class, mappedBy="product", cascade={"remove"})
+     * @ORM\OneToMany(targetEntity=PersonLikeProduct::class, mappedBy="product")
      */
     private $ProductHavePersons;
+    //, cascade={"remove"}
 
     public function __construct()
     {

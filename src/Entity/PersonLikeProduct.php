@@ -23,10 +23,10 @@ class PersonLikeProduct
     /**
      * @ORM\Id
      * @ORM\ManyToOne(targetEntity=Product::class, inversedBy="ProductHavePersons")
-     * @ORM\JoinColumn(nullable=false, onDelete="CASCADE")
+     * @ORM\JoinColumn(nullable=false)
      */
     private $product;
-
+//, onDelete="CASCADE"
 
     public function getPerson(): ?Person
     {
