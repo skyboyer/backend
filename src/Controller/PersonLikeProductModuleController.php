@@ -430,19 +430,29 @@ class PersonLikeProductModuleController extends AbstractController
 
     public function person_like_product_delete ( $id_person, $id_product)
     {
-        
-    // extracting array of PersonLikeProduct objects for the chosen product and person    
-        $personLikeProductManager = $this->getDoctrine()->getManager();
-        $personLikeProductArray = $this->getDoctrine()->getRepository(PersonLikeProduct::class)
+      $personLikeProductManager = $this->getDoctrine()->getManager();
+    
+    // deleting like in queryBuilder:      
+        $queryBuilder = $personLikeProductManager->createQueryBuilder()
+                                                    -> delete ('App\Entity\PersonLikeProduct','plp')
+                                                    -> setParameter('product_id', $id_product)
+                                                    -> setParameter('person_id', $id_person)
+                                                    -> andwhere ('plp.product = :product_id')
+                                                    -> andwhere ('plp.person = :person_id');
+        $query = $queryBuilder->getQuery();
+        $query->execute();
+       
+    // deleting like in iteration:    
+        /*$personLikeProductArray = $this->getDoctrine()->getRepository(PersonLikeProduct::class)
                                                 ->findBy ([
                                                     'person' => $id_person, 
                                                     'product' => $id_product 
                                                 ]);
-    // delete like for the person   
         foreach ($personLikeProductArray as $persprod) {
             $personLikeProductManager->remove($persprod);
-            $personLikeProductManager->flush();
-        }   
+            $personLikeProductManager->flush();  
+        }   */
+
     //reconstraction of chosen/not chosen products (by getting saved GET form parameters) 
         $requestForm=$this->session->get('sessionForm'); 
         
@@ -610,9 +620,20 @@ class PersonLikeProductModuleController extends AbstractController
 
     public function product_like_person_delete ($id_product, $id_person)
     {
-    // extracting array of PersonLikeProduct objects for the chosen product and person    
-        $productLikePersonManager = $this->getDoctrine()->getManager();
-        $productLikePersonArray = $this->getDoctrine()->getRepository(PersonLikeProduct::class)
+       $productLikePersonManager = $this->getDoctrine()->getManager();
+        
+    // deleting like in queryBuilder:      
+        $queryBuilder = $productLikePersonManager->createQueryBuilder()
+                                                    -> delete ('App\Entity\PersonLikeProduct','plp')
+                                                    -> setParameter('product_id', $id_product)
+                                                    -> setParameter('person_id', $id_person)
+                                                    -> andwhere ('plp.product = :product_id')
+                                                    -> andwhere ('plp.person = :person_id');
+        $query = $queryBuilder->getQuery();
+        $query->execute();
+
+    // deleting like in iteration:    
+       /* $productLikePersonArray = $this->getDoctrine()->getRepository(PersonLikeProduct::class)
                                                 ->findBy ([
                                                     'person' => $id_person, 
                                                     'product' => $id_product 
@@ -621,7 +642,7 @@ class PersonLikeProductModuleController extends AbstractController
         foreach ($productLikePersonArray as $prodpers) {
             $productLikePersonManager->remove($prodpers);
             $productLikePersonManager->flush();
-        }   
+        }   */
 
     //reconstraction of chosen/not chosen products (by getting saved GET form parameters) 
         $requestForm=$this->session->get('sessionFormPerson'); 
