@@ -26,7 +26,7 @@ class PersonLikeProduct
      * @ORM\JoinColumn(nullable=false)
      */
     private $product;
-//, onDelete="CASCADE"
+//@ORM\JoinColumn(nullable=false, onDelete="CASCADE")  - version with cascading delete 
 
     public function getPerson(): ?Person
     {
