@@ -127,8 +127,10 @@ class PersonLikeProductModuleController extends AbstractController
             if (isset($i_name)) {
                 $i_name=$i_name->getIName();
                 $queryBuilder=$queryBuilder->setParameter('i_name', strtolower($i_name))
-                                            -> andwhere ($queryBuilder->expr()->eq(
-                                                        $queryBuilder-> expr()->lower('p.i_name'), ':i_name') ) ;
+                                            -> andwhere ($queryBuilder->expr()->eq  (
+                                                                                    $queryBuilder-> expr()->lower('p.i_name'), ':i_name'
+                                                                                    ) 
+                                                        ) ;
             }
             if (isset($f_name)) {
                 $f_name=$f_name->getFName();

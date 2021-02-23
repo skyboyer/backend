@@ -64,7 +64,7 @@
                             //    params.page = params.page || 1;
 
                             // TRANSFORM RESULTS INTO SELECT2 DATA FORMAT
-                                   
+                            /*       
                                 return {
                                     results: $.map(data, function(obj) {
                                                                             if(obj.id!=0){
@@ -74,8 +74,8 @@
                                                                                 {return {id: obj.id, text: obj.login}}
                                                                         })
                                 };
-                            
-                                /*
+                            */
+                            /*   
                                 data = jQuery.map(data.results, function (obj) { 
                                         obj.id = obj.id;
                                         obj.text = obj.login;
@@ -83,15 +83,24 @@
                                         //obj.f = obj.f_name;
                                         //obj.state = obj.state;
                                         return obj;
-                                return {
-                                    results: data,
-                                    pagination: {
-                                                    more: params.page * 30 < data.total_count
-                                                }
-                                    
-                                };   
-                                */
-                                    
+                                    return {
+                                        results: data,
+                                        //pagination: {
+                                        //                more: params.page * 30 < data.total_count
+                                        //            }
+                                        }
+                                });   
+                            */     
+                            
+                                var data = jQuery.map(data, function (obj) { 
+                                    obj.text = obj.text || obj.login; // replace name with the property used for the text
+                                    return obj;
+                                    return {
+                                        results: data,
+                                    }
+                                });   
+
+
                                 /*
                                 return {
                                     results: data.items,

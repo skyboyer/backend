@@ -41,15 +41,12 @@ class AjaxSearchController extends AbstractController
                                             -> select('pers')
                                             -> from ('App\Entity\Person', 'pers')
                                             
-                                            -> setParameter('key', $key)
-                                            -> where ('pers.login = :key');
-
-
-                                            // $queryBuilder->expr()->like('pers.login', ':key')
-                                            //->setParameter('login', '%'.addcslashes($key, '%_').'%')
-                                            //->setParameter('key', '%'.$key.'%');
-                                           // -> orderBy('login', 'ASC');
-
+                                            //->setParameter('key', '%'.$key.'%')
+                                            -> setParameter('key', '%'.addcslashes($key, '%_').'%')
+                                            -> andWhere ('pers.login LIKE :key')
+                                            
+                                            // -> orderBy('login', 'ASC')
+                                            ;
     $results = $queryBuilder->getQuery()->getResult();
     
     /*$returnArray=array();
