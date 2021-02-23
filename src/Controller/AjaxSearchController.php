@@ -36,7 +36,6 @@ class AjaxSearchController extends AbstractController
         $key = $request->query->get('q'); 
 
     // Find rows matching with keyword $key:
-
     $entityManager = $this->getDoctrine()->getManager();
     $queryBuilder = $entityManager->createQueryBuilder()
                                             -> select('pers')
@@ -48,7 +47,7 @@ class AjaxSearchController extends AbstractController
 
                                             // $queryBuilder->expr()->like('pers.login', ':key')
                                             //->setParameter('login', '%'.addcslashes($key, '%_').'%')
-                                            //setParameter('key', '%'.$key.'%');
+                                            //->setParameter('key', '%'.$key.'%');
                                            // -> orderBy('login', 'ASC');
 
     $results = $queryBuilder->getQuery()->getResult();
