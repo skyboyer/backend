@@ -63,7 +63,6 @@
                             //    params.page = params.page || 1;
 
                             // TRANSFORM RESULTS INTO SELECT2 DATA FORMAT
-                            
                                    
                                 return {
                                     results: $.map(data, function(obj) {
@@ -75,22 +74,28 @@
                                                                         })
                                 };
                             
-
-                                /*data = jQuery.map(data.results, function (obj) { // "results" = match the name of the toplevel JSON returned
+                                /*
+                                data = jQuery.map(data.results, function (obj) { 
                                         obj.id = obj.id;
                                         obj.text = obj.login;
                                         //obj.i = obj.i_name;
                                         //obj.f = obj.f_name;
                                         //obj.state = obj.state;
                                         return obj;
-                                });  */
-                                
-                                /*return {
+                                return {
+                                    results: data,
+                                    
+                                };   
+                                */
+                                    
+                                /*
+                                return {
                                     results: data.items,
                                     //pagination: {
                                     //    more: params.page * 30 < data.total_count
-                                    //  }
-                                };
+                                    //  } 
+                                };   
+                                */
                                
                             },
                        
