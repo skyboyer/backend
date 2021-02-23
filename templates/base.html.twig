@@ -52,18 +52,25 @@
                             dataType: 'json',
                             delay: 350, // wait 350 milliseconds before triggering the request
                             
-                            // Additional AJAX parameters go here;
+                            // Additional AJAX parameters go here:
                             data: function (params) {
                                 return {
                                     q: params.term, // search term
-                                    //page: params.page,
+                                    page: params.page,
                                 };
                             },
-
-                            processResults: function (data) { 
-                            //    params.page = params.page || 1;
-
-                            // TRANSFORM RESULTS INTO SELECT2 DATA FORMAT
+                            
+                            processResults: function (data, params) { 
+                                params.page = params.page || 1;
+                            /*    
+                                return {
+                                    results:[
+                                                {id: 1, text: 'tre'},
+                                                {id: 2, text: 'tre2'},
+                                            ],
+                                }
+                            */
+                           
                             /*       
                                 return {
                                     results: $.map(data, function(obj) {
@@ -75,6 +82,7 @@
                                                                         })
                                 };
                             */
+
                             /*   
                                 data = jQuery.map(data.results, function (obj) { 
                                         obj.id = obj.id;
@@ -91,7 +99,7 @@
                                         }
                                 });   
                             */     
-                            
+                            /*
                                 var data = jQuery.map(data, function (obj) { 
                                     obj.text = obj.text || obj.login; // replace name with the property used for the text
                                     return obj;
@@ -99,16 +107,16 @@
                                         results: data,
                                     }
                                 });   
+                            */
 
-
-                                /*
+                                
                                 return {
-                                    results: data.items,
-                                    //pagination: {
-                                    //    more: params.page * 30 < data.total_count
-                                    //  } 
+                                    results: data,
+                                    pagination: {
+                                       more: params.page * 10 < data.total_count
+                                      } 
                                 };   
-                                */
+                                
                                
                             },
                        

@@ -27,15 +27,18 @@ use App\Repository\PersonLikeProductRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\EntityManagerInterface;
 
+use App\Controller\JsonResponse;
+use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
+
 
 class AjaxSearchController extends AbstractController
 {
-    public function ajax_search(Request $request) : JsonResponse
+    public function ajax_search(Request $request) : Response
     {
         $key = $request->query->get('q'); 
 
-    // Find rows matching with keyword $key:
+    // Find rows matching with keyword $key - queryBuilder:
     $entityManager = $this->getDoctrine()->getManager();
     $queryBuilder = $entityManager->createQueryBuilder()
                                             -> select('pers')
@@ -48,17 +51,28 @@ class AjaxSearchController extends AbstractController
                                             // -> orderBy('login', 'ASC')
                                             ;
     $results = $queryBuilder->getQuery()->getResult();
+
+    //Find rows matching with keyword $key - DQL:
+    /*$productManager = $this->getDoctrine()->getManager();
+    $DQLquery = $productManager->createQuery(  
+                                               "SELECT App\Entity\Person pers 
+                                                WHERE p.id = :id "
+                                            );
+    $DQLquery->setParameter('id', $id);
+    $DQLquery->execute(); */
+
     
-    /*$returnArray=array();
+    $returnArray=array();
     foreach($results as $result) {
         array_push($returnArray, [
                 'id' => $result->getId(),
                 'text' => $result->getLogin() ],
             );
-    }*/
+    };
         
-    // customize your output as per Select2 requirement:
-    return new JsonResponse($results);
+    return $this->json($returnArray);
+
+   // {id: 1, text: 'tre'},
 
     } 
 }
