@@ -58,6 +58,11 @@ product_like_person_add:
 product_like_person_delete:
             path: /product/like/person/delete/{id_product}/{id_person}
             controller: App\Controller\PersonLikeProductModuleController::product_like_person_delete
+
+ajax_search:
+            path: /ajax/search
+            controller: App\Controller\AjaxSearchController::ajax_search
+
             
             
 
