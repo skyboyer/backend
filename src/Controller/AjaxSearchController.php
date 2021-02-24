@@ -29,50 +29,108 @@ use Doctrine\ORM\EntityManagerInterface;
 
 use App\Controller\JsonResponse;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
+
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 
 
 class AjaxSearchController extends AbstractController
 {
-    public function ajax_search(Request $request) : Response
-    {
+    public function ajax_search_person_i(Request $request) : Response {
         $key = $request->query->get('q'); 
 
-    // Find rows matching with keyword $key - queryBuilder:
-    $entityManager = $this->getDoctrine()->getManager();
-    $queryBuilder = $entityManager->createQueryBuilder()
-                                            -> select('pers')
-                                            -> from ('App\Entity\Person', 'pers')
-                                            
-                                            //->setParameter('key', '%'.$key.'%')
-                                            -> setParameter('key', '%'.addcslashes($key, '%_').'%')
-                                            -> andWhere ('pers.login LIKE :key')
-                                            
-                                            // -> orderBy('login', 'ASC')
-                                            ;
-    $results = $queryBuilder->getQuery()->getResult();
+        $entityManager = $this->getDoctrine()->getManager();
+        $queryBuilder = $entityManager->createQueryBuilder()
+                                                -> select('pers')
+                                                -> from ('App\Entity\Person', 'pers')
+                                                -> setParameter('key', '%'.addcslashes($key, '%_').'%') 
+                                                -> where ('pers.i_name LIKE :key');
+        $results = $queryBuilder->getQuery()->getResult();
+
+        $returnArray=array();
+        foreach($results as $result) {
+            array_push($returnArray, ['id' => $result->getId(), 'text' => $result->getIName()] );
+        };
+        return $this->json($returnArray);
+    }
+
+    public function ajax_search_person_f(Request $request) : Response {
+        $key = $request->query->get('q'); 
+
+        $entityManager = $this->getDoctrine()->getManager();
+        $queryBuilder = $entityManager->createQueryBuilder()
+                                                -> select('pers')
+                                                -> from ('App\Entity\Person', 'pers')
+                                                -> setParameter('key', '%'.addcslashes($key, '%_').'%') 
+                                                -> where ('pers.f_name LIKE :key');
+        $results = $queryBuilder->getQuery()->getResult();
+
+        $returnArray=array();
+        foreach($results as $result) {
+            array_push($returnArray, ['id' => $result->getId(), 'text' => $result->getFName()] );
+        };
+        return $this->json($returnArray);
+    }
+
+    public function ajax_search_product_name(Request $request) : Response {
+        $key = $request->query->get('q'); 
+
+        $entityManager = $this->getDoctrine()->getManager();
+        $queryBuilder = $entityManager->createQueryBuilder()
+                                                -> select('pers')
+                                                -> from ('App\Entity\Product', 'prod')
+                                                -> setParameter('key', '%'.addcslashes($key, '%_').'%') 
+                                                -> where ('prod.name LIKE :key');
+        $results = $queryBuilder->getQuery()->getResult();
+
+        $returnArray=array();
+        foreach($results as $result) {
+            array_push($returnArray, ['id' => $result->getId(), 'text' => $result->getName()] );
+        };
+        return $this->json($returnArray);
+    }
+
+    public function ajax_search_person_login(Request $request) : Response {
+        $key = $request->query->get('q'); 
+
+        // Find rows matching with keyword $key - queryBuilder:
+        $entityManager = $this->getDoctrine()->getManager();
+        $queryBuilder = $entityManager->createQueryBuilder()
+                                                -> select('pers')
+                                                -> from ('App\Entity\Person', 'pers')
+                                                -> setParameter('key', '%'.addcslashes($key, '%_').'%')  //more secure, see https://stackoverflow.com/questions/3755718/doctrine2-dql-use-setparameter-with-wildcard-when-doing-a-like-comparison
+                                                //->setParameter('key', '%'.$key.'%') //less secure
+
+                                                -> where ('pers.login LIKE :key')
+                                                -> orWhere  ('pers.i_name LIKE :key')
+                                                -> orWhere  ('pers.f_name LIKE :key');
+        $results = $queryBuilder->getQuery()->getResult();
+
+        
+    //some code for learning purposes:
 
     //Find rows matching with keyword $key - DQL:
-    /*$productManager = $this->getDoctrine()->getManager();
-    $DQLquery = $productManager->createQuery(  
-                                               "SELECT App\Entity\Person pers 
-                                                WHERE p.id = :id "
-                                            );
-    $DQLquery->setParameter('id', $id);
-    $DQLquery->execute(); */
 
-    
-    $returnArray=array();
-    foreach($results as $result) {
-        array_push($returnArray, [
-                'id' => $result->getId(),
-                'text' => $result->getLogin() ],
-            );
-    };
-        
-    return $this->json($returnArray);
+        /*$productManager = $this->getDoctrine()->getManager();
+        $DQLquery = $productManager->createQuery(  
+                                                "SELECT App\Entity\Person pers 
+                                                    WHERE p.id = :id "
+                                                );
+        $DQLquery->setParameter('id', $id);
+        $DQLquery->execute(); */
 
-   // {id: 1, text: 'tre'},
+        $returnArray=array();
+        foreach($results as $result) {
+            
+            //if ($result->getLogin();
 
-    } 
+            array_push($returnArray, [
+                    'id' => $result->getId(),
+                    'text' => $result->getLogin(), ],
+                );
+        };
+        return $this->json($returnArray);
+    }
+
+
+
 }

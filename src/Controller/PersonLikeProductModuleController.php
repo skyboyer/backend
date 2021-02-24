@@ -49,7 +49,7 @@ class PersonLikeProductModuleController extends AbstractController
                                     'required' => false,
                                     'mapped' => false,
                                     'attr' => array(
-                                        'class'=>'js-select2'
+                                        'class'=>'js-select2-person-login',
                                     ), ])
                     ->add('i_name', EntityType::class, [
                                     'label'=>'Name:',
@@ -58,7 +58,7 @@ class PersonLikeProductModuleController extends AbstractController
                                     'required' => false,
                                     'mapped' => false,
                                     'attr' => array(
-                                        'class'=>'js-select2'
+                                        'class'=>'js-select2-person-i', 
                                     ), ])
                     ->add('f_name', EntityType::class, [
                                     'label'=>'Surname:',
@@ -67,7 +67,7 @@ class PersonLikeProductModuleController extends AbstractController
                                     'required' => false,
                                     'mapped' => false,
                                     'attr' => array(
-                                        'class'=>'js-select2'
+                                        'class'=>'js-select2-person-f'
                                     ), ])
                     ->add('state', ChoiceType::class, 
                                     ['label'=>'Choose the State:',
@@ -90,7 +90,7 @@ class PersonLikeProductModuleController extends AbstractController
                                     'choice_label' => 'name',
                                     'required' => false,
                                     'attr' => array(
-                                        'class'=>'js-select2'
+                                        'class'=>'js-select2-product-name'
                                     ), ])
                     ->add('date_from', DateType::class, ['label'=>'Publication date from:',
                                         'required' => false,
@@ -126,17 +126,20 @@ class PersonLikeProductModuleController extends AbstractController
                                             -> from ('App\Entity\Person', 'p');
             if (isset($i_name)) {
                 $i_name=$i_name->getIName();
-                $queryBuilder=$queryBuilder->setParameter('i_name', strtolower($i_name))
+                $queryBuilder=$queryBuilder ->setParameter('i_name', $i_name)
+                                             -> andwhere ('p.i_name = :i_name') ;
+                                            
+                                            //version with lowcaser:
+                                            /*->setParameter('i_name', strtolower($i_name))
                                             -> andwhere ($queryBuilder->expr()->eq  (
                                                                                     $queryBuilder-> expr()->lower('p.i_name'), ':i_name'
                                                                                     ) 
-                                                        ) ;
+                                                        ) */;
             }
             if (isset($f_name)) {
                 $f_name=$f_name->getFName();
-                $queryBuilder=$queryBuilder->setParameter('f_name', strtolower($f_name))
-                                            -> andwhere ( $queryBuilder->expr()->eq(
-                                                          $queryBuilder-> expr()->lower('p.f_name'), ':f_name') ) ;
+                $queryBuilder=$queryBuilder->setParameter('f_name', $f_name)
+                                            -> andwhere ('p.f_name = :f_name') ;
             }
             if (isset($login)) {
                 $login=$login->getLogin();
@@ -149,7 +152,8 @@ class PersonLikeProductModuleController extends AbstractController
             }
             $persons = $queryBuilder->getQuery()->getResult();
 
-/*  !!! query with two joins!! get $products_array that has assosiated persons:
+/*  some code for learning purposes:
+    !!! query with two joins!! get $products_array that has assosiated persons:
 
  if ($form_person->isSubmitted() ) {
             $personManager = $this->getDoctrine()->getManager(); //проверить надо ли эта часть!!
@@ -199,7 +203,7 @@ class PersonLikeProductModuleController extends AbstractController
                         
             $match=1;  // shows, that form_person is submitted
 
-        //array of chosen in form states in string format    
+        //array of  form states in string format    
             $statesString=array();
             foreach($states as $state)
             {
@@ -259,9 +263,8 @@ class PersonLikeProductModuleController extends AbstractController
             }
             if (isset($name)) {
                 $name=$name->getName();
-                $queryBuilder=$queryBuilder->setParameter('name', strtolower($name))
-                                            ->andwhere ($queryBuilder->expr()->eq(
-                                                       $queryBuilder-> expr()->lower('p.name'), ':name') ) ;
+                $queryBuilder=$queryBuilder->setParameter('name', $name)
+                                            ->andwhere ('p.name = :name');
             }
             $products = $queryBuilder->getQuery()->getResult();
             
@@ -292,7 +295,7 @@ class PersonLikeProductModuleController extends AbstractController
         $personManager = $this->getDoctrine()->getManager();
         $person = $personManager->getRepository(Person::class)->find($id_person);
 
-    //making array of liked Products objects    
+    //making array of liked Products objects    -??? >500 ??
         $personHaveProducts = $person->getPersonHaveProducts();
         $productsLiked = array();
         foreach ($personHaveProducts as $personHaveProduct) {
@@ -308,7 +311,7 @@ class PersonLikeProductModuleController extends AbstractController
                                     'choice_label' => 'name',
                                     'required' => false,
                                     'attr' => array(
-                                        'class'=>'js-select2'
+                                        'class'=>'js-select2-product-name'
                                     ), ])
                     ->add('date_from', DateType::class, ['label'=>'Publication date from:',
                                         'required' => false,
@@ -358,9 +361,8 @@ class PersonLikeProductModuleController extends AbstractController
             }  
             if (isset($name)) {
                 $name=$name->getName();
-                $queryBuilder=$queryBuilder->setParameter('name', strtolower($name))
-                                            ->andwhere ($queryBuilder->expr()->eq(
-                                                       $queryBuilder-> expr()->lower('p.name'), ':name') ) ;
+                $queryBuilder=$queryBuilder->setParameter('name', $name)
+                                            ->andwhere ('p.name = :name');
             }
             $products = $queryBuilder->getQuery()->getResult();
 
@@ -376,9 +378,7 @@ class PersonLikeProductModuleController extends AbstractController
                 'person' => $person,
 
                 'productsLiked' => $productsLiked,
-                    
             ]);
-   
         } 
         else {
             $contents = $this->renderView('person_like_product_edit/person_like_product_edit.html.twig', [
@@ -444,6 +444,8 @@ class PersonLikeProductModuleController extends AbstractController
         $query = $queryBuilder->getQuery();
         $query->execute();
        
+//some learning code:
+
     // deleting like in iteration:    
         /*$personLikeProductArray = $this->getDoctrine()->getRepository(PersonLikeProduct::class)
                                                 ->findBy ([
@@ -482,7 +484,7 @@ class PersonLikeProductModuleController extends AbstractController
                                     'choice_label' => 'login',
                                     'required' => false,
                                     'attr' => array(
-                                        'class'=>'js-select2'
+                                        'class'=>'js-select2-person-login'
                                     ), ])
                                 ->add('i_name', EntityType::class, [
                                     'label'=>'Name:',
@@ -490,7 +492,7 @@ class PersonLikeProductModuleController extends AbstractController
                                     'choice_label' => 'i_name',
                                     'required' => false,
                                     'attr' => array(
-                                        'class'=>'js-select2'
+                                        'class'=>'js-select2-person-i'
                                     ), ])
                                 ->add('f_name', EntityType::class, [
                                     'label'=>'Surname:',
@@ -498,7 +500,7 @@ class PersonLikeProductModuleController extends AbstractController
                                     'choice_label' => 'f_name',
                                     'required' => false,
                                     'attr' => array(
-                                        'class'=>'js-select2'
+                                        'class'=>'js-select2-person-f'
                                     ), ])
                                 ->add('state', ChoiceType::class, ['label'=>'User\'s state:',
                                                             'placeholder'=>"",
@@ -535,17 +537,14 @@ class PersonLikeProductModuleController extends AbstractController
                                             -> from ('App\Entity\Person', 'p');
             if (isset($i_name)) {
                 $i_name=$i_name->getIName();
-                $queryBuilder=$queryBuilder->setParameter('i_name', strtolower($i_name))
-                                            -> andwhere ($queryBuilder->expr()->eq(
-                                                        $queryBuilder-> expr()->lower('p.i_name'), ':i_name') ) ;
+                $queryBuilder=$queryBuilder->setParameter('i_name', $i_name)
+                                            -> andwhere ('p.i_name = :i_name');
             }
             if (isset($f_name)) {
                 $f_name=$f_name->getFName();
-                $queryBuilder=$queryBuilder->setParameter('f_name', strtolower($f_name))
-                                            -> andwhere ( $queryBuilder->expr()->eq(
-                                                          $queryBuilder-> expr()->lower('p.f_name'), ':f_name') ) ;
+                $queryBuilder=$queryBuilder->setParameter('f_name', $f_name)
+                                            -> andwhere ('p.f_name = :f_name');
             }
-
             if (isset($login)) {
                 $login=$login->getLogin();
                 $queryBuilder= $queryBuilder->setParameter('login', $login)
@@ -634,7 +633,9 @@ class PersonLikeProductModuleController extends AbstractController
         $query = $queryBuilder->getQuery();
         $query->execute();
 
-    // deleting like in iteration:    
+//some code for learning purposes:
+
+        // deleting like in iteration:    
        /* $productLikePersonArray = $this->getDoctrine()->getRepository(PersonLikeProduct::class)
                                                 ->findBy ([
                                                     'person' => $id_person, 

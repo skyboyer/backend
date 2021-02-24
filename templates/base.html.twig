@@ -40,28 +40,133 @@
         
         {% block javascripts %}
 
+        {# widget for date fields bootstrap #}
+        <script>
+            $(document).ready(function() {
+                // you may need to change this code if you are not using Bootstrap Datepicker
+                $('.js-datepicker').datepicker({
+                    format: 'yyyy-mm-dd',
+                    clearBtn: true,
+                    autoclose: true,
+                });
+            });
+        </script>
 
-        {# widget for select fields #}
+        {# widgets for select fields #}
+            
+            <script>
+                $(document).ready(function() {
+                    $('.js-select2-person-i').select2({
+                        ajax: {
+                            url: '/ajax/search/person/i',
+                            dataType: 'json',
+                            delay: 350,
+                            minimumInputLength: 2,
+                            data: function (params) {
+                                return {
+                                    q: params.term,
+                                    page: params.page,
+                                }; 
+                            },
+                            processResults: function (data, params) { 
+                                params.page = params.page || 1;
+                                return {
+                                    results: data,
+                                    pagination: {
+                                       more: params.page * 10 < data.total_count
+                                    } 
+                                };   
+                            },
+                        },
+                    });
+                })
+            </script>
 
             <script>
                 $(document).ready(function() {
-                    $('.js-select2').select2({
+                    $('.js-select2-person-f').select2({
+                        ajax: {
+                            url: '/ajax/search/person/f',
+                            dataType: 'json',
+                            delay: 350,
+                            minimumInputLength: 2,
+                            data: function (params) {
+                                return {
+                                    q: params.term,
+                                    page: params.page,
+                                }; 
+                            },
+                            processResults: function (data, params) { 
+                                params.page = params.page || 1;
+                                return {
+                                    results: data,
+                                    pagination: {
+                                       more: params.page * 10 < data.total_count
+                                    } 
+                                };   
+                            },
+                        },
+                    });
+                })
+            </script>
+
+            <script>
+                $(document).ready(function() {
+                    $('.js-select2-product-nane').select2({
+                        ajax: {
+                            url: '/ajax/search/product/name',
+                            dataType: 'json',
+                            delay: 350,
+                            minimumInputLength: 2,
+                            data: function (params) {
+                                return {
+                                    q: params.term,
+                                    page: params.page,
+                                }; 
+                            },
+                            processResults: function (data, params) { 
+                                params.page = params.page || 1;
+                                return {
+                                    results: data,
+                                    pagination: {
+                                       more: params.page * 10 < data.total_count
+                                    } 
+                                };   
+                            },
+                        },
+                    });
+                })
+            </script>
+
+            <script>
+                $(document).ready(function() {
+                    $('.js-select2-person-login').select2({
 
                         ajax: {
-                            url: '/ajax/search',
+                            url: '/ajax/search/person/login',
                             dataType: 'json',
                             delay: 350, // wait 350 milliseconds before triggering the request
-                            
+                            minimumInputLength: 2,
+
                             // Additional AJAX parameters go here:
                             data: function (params) {
                                 return {
                                     q: params.term, // search term
-                                    page: params.page,
+                                     page: params.page,
                                 };
                             },
                             
                             processResults: function (data, params) { 
                                 params.page = params.page || 1;
+                                return {
+                                    results: data,
+                                    pagination: {
+                                       more: params.page * 10 < data.total_count
+                                      } 
+                                };   
+                            },
+                            
+            //some code for learning:
                             /*    
                                 return {
                                     results:[
@@ -108,24 +213,10 @@
                                     }
                                 });   
                             */
-
-                                
-                                return {
-                                    results: data,
-                                    pagination: {
-                                       more: params.page * 10 < data.total_count
-                                      } 
-                                };   
-                                
-                               
-                            },
-                       
-                        },
-
-                        minimumInputLength: 2,
   
+                                
+                        },
                     });
-                    
                 })
             </script>
 
@@ -137,19 +228,6 @@
                   });
                 } );
             </script> #}
-
-        {# widget for date fields bootstrap #}
-            <script>
-                $(document).ready(function() {
-                    // you may need to change this code if you are not using Bootstrap Datepicker
-                    $('.js-datepicker').datepicker({
-                        format: 'yyyy-mm-dd',
-                        clearBtn: true,
-                        autoclose: true,
-                    });
-                });
-            </script>
-
 
         {% endblock %}
     </body>

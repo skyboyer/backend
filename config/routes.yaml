@@ -59,9 +59,24 @@ product_like_person_delete:
             path: /product/like/person/delete/{id_product}/{id_person}
             controller: App\Controller\PersonLikeProductModuleController::product_like_person_delete
 
-ajax_search:
-            path: /ajax/search
-            controller: App\Controller\AjaxSearchController::ajax_search
+ajax_search_person_login:
+            path: /ajax/search/person/login
+            controller: App\Controller\AjaxSearchController::ajax_search_person_login
+
+ajax_search_person_i:
+            path: /ajax/search/person/i
+            controller: App\Controller\AjaxSearchController::ajax_search_person_i
+
+ajax_search_person_f:
+            path: /ajax/search/person/f
+            controller: App\Controller\AjaxSearchController::ajax_search_person_f
+
+ajax_search_product_name:
+            path: /ajax/search/product/name
+            controller: App\Controller\AjaxSearchController::ajax_search_product_name
+
+
+
 
             
             

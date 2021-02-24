@@ -173,8 +173,9 @@ class ProductModuleController extends AbstractController
        
     public function product_delete ($id)
     {
+//some code for learning purposes:
+    
     // remove product's relations without taking large quantities into account, in iteration
-
         /*$personLikeProductManager = $this->getDoctrine()->getManager();
         $personLikeProduct = $this->getDoctrine()->getRepository(PersonLikeProduct::class)
                                                 ->findBy ([
@@ -188,8 +189,7 @@ class ProductModuleController extends AbstractController
 
 
     // remove product's relations with queryBuilder:
-    
-       /* $personLikeProductManager = $this->getDoctrine()->getManager();
+         /* $personLikeProductManager = $this->getDoctrine()->getManager();
         $queryBuilder = $personLikeProductManager->createQueryBuilder()
                                                     -> delete ('App\Entity\PersonLikeProduct','plp')
                                                     -> setParameter('product_id', $id)
@@ -198,28 +198,29 @@ class ProductModuleController extends AbstractController
         $query->execute();   */
 
     // remove product's relations with raw SQL:
-        $SQLquery="DELETE FROM person_like_product AS plp WHERE  plp.product_id = :id";
+        /*$SQLquery="DELETE FROM person_like_product AS plp WHERE  plp.product_id = :id";
             
         $entityManager = $this->getDoctrine()->getManager();
         $stmt=$entityManager->getConnection()->prepare($SQLquery);
         $stmt->bindValue('id', $id);
-        $stmt->execute();
+        $stmt->execute();*/
 
-
-    //remove product from DB simple:
-       /* $productManager = $this->getDoctrine()->getManager();
+    //remove product from DB simple, all assotiations are removed thanks to "cascade={"remove"}"-annotation in property $ProductHavePersons in Product class:
+       $productManager = $this->getDoctrine()->getManager();
         $product = $productManager->getRepository(Product::class)->find($id);
         $productManager->remove($product);
-        $productManager->flush();   */
+        $productManager->flush(); 
 
+//some code for learning purposes:
+    
     //remove product from DB with DQL:
-        $productManager = $this->getDoctrine()->getManager();
+        /*$productManager = $this->getDoctrine()->getManager();
         $DQLquery = $productManager->createQuery("  DELETE App\Entity\Product p 
                                                     WHERE p.id = :id ");
         $DQLquery->setParameter('id', $id);
         $DQLquery->execute(); 
 
-        return $this->redirectToRoute('product');
+        return $this->redirectToRoute('product');*/
     }
 
     public function product_add (Request $request)
