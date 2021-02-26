@@ -8,6 +8,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\Extension\Core\Type\SearchType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\ResetType;
 
@@ -42,30 +43,23 @@ class PersonLikeProductModuleController extends AbstractController
     //form for filtering persons to see their likes
         $person = new Person();
         $form_person = $this->createForm (PersonType::class, $person,['method' => 'GET'])
-                    ->add('login', EntityType::class, [
+                    ->add('login', ChoiceType::class, [
                                     'label'=>'Login (ATTENTION ON REGISTER!):',
-                                    'class'=> Person::class,
-                                    'choice_label' => 'login',
                                     'required' => false,
-                                    'mapped' => false,
+                                    'choices' => [],
+                                    
                                     'attr' => array(
-                                        'class'=>'js-select2-person-login',
+                                        'class'=>'js-select2-person-login'
                                     ), ])
-                    ->add('i_name', EntityType::class, [
+                    ->add('i_name', TextType::class, [
                                     'label'=>'Name:',
-                                    'class'=> Person::class,
-                                    'choice_label' => 'i_name',
                                     'required' => false,
-                                    'mapped' => false,
                                     'attr' => array(
                                         'class'=>'js-select2-person-i', 
                                     ), ])
-                    ->add('f_name', EntityType::class, [
+                    ->add('f_name', TextType::class, [
                                     'label'=>'Surname:',
-                                    'class'=> Person::class,
-                                    'choice_label' => 'f_name',
                                     'required' => false,
-                                    'mapped' => false,
                                     'attr' => array(
                                         'class'=>'js-select2-person-f'
                                     ), ])
@@ -84,10 +78,8 @@ class PersonLikeProductModuleController extends AbstractController
      //form for filtering products to see its lovers   
         $form_product = $this->createFormBuilder()
                     ->setMethod('GET')
-                    ->add('name', EntityType::class, [
+                    ->add('name', SearchType::class, [
                                     'label'=>'Name:',
-                                    'class'=> Product::class,
-                                    'choice_label' => 'name',
                                     'required' => false,
                                     'attr' => array(
                                         'class'=>'js-select2-product-name'
@@ -113,7 +105,7 @@ class PersonLikeProductModuleController extends AbstractController
         $persons=array();
                 
         if ($form_person->isSubmitted() ) {
-                       
+             
             $login=$form_person->get('login')->getData();
             $i_name=$form_person->get('i_name')->getData();
             $f_name=$form_person->get('f_name')->getData();
@@ -122,12 +114,12 @@ class PersonLikeProductModuleController extends AbstractController
         //filtering persons based on form info
             $entityManager = $this->getDoctrine()->getManager();
             $queryBuilder = $entityManager->createQueryBuilder()
-                                            -> select('p')
-                                            -> from ('App\Entity\Person', 'p');
+                                            -> select('pers')
+                                            -> from ('App\Entity\Person', 'pers');
             if (isset($i_name)) {
-                $i_name=$i_name->getIName();
+                //$i_name=$i_name->getIName();
                 $queryBuilder=$queryBuilder ->setParameter('i_name', $i_name)
-                                             -> andwhere ('p.i_name = :i_name') ;
+                                             -> andwhere ('pers.i_name = :i_name') ;
                                             
                                             //version with lowcaser:
                                             /*->setParameter('i_name', strtolower($i_name))
@@ -137,18 +129,18 @@ class PersonLikeProductModuleController extends AbstractController
                                                         ) */;
             }
             if (isset($f_name)) {
-                $f_name=$f_name->getFName();
+                //$f_name=$f_name->getFName();
                 $queryBuilder=$queryBuilder->setParameter('f_name', $f_name)
-                                            -> andwhere ('p.f_name = :f_name') ;
+                                            -> andwhere ('pers.id = :f_name') ;
             }
             if (isset($login)) {
-                $login=$login->getLogin();
+                //$login=$login->getLogin();
                 $queryBuilder= $queryBuilder->setParameter('login', $login)
-                                        -> andWhere('p.login = :login');
+                                        -> andWhere('pers.id = :login');
             }
             if (!empty($states)) {
                 $queryBuilder= $queryBuilder->setParameter('states', $states)
-                                            -> andWhere('p.state in (:states)');
+                                            -> andWhere('pers.state in (:states)');
             }
             $persons = $queryBuilder->getQuery()->getResult();
 
@@ -262,7 +254,7 @@ class PersonLikeProductModuleController extends AbstractController
                                             ->andwhere ('p.public_date<= :date_to');
             }
             if (isset($name)) {
-                $name=$name->getName();
+                //$name=$name->getName();
                 $queryBuilder=$queryBuilder->setParameter('name', $name)
                                             ->andwhere ('p.name = :name');
             }
@@ -305,10 +297,8 @@ class PersonLikeProductModuleController extends AbstractController
     //form for chose products to like    
         $form_product = $this->createFormBuilder()
                     ->setMethod('GET')
-                    ->add('name', EntityType::class, [
+                    ->add('name', TextType::class, [
                                     'label'=>'Name:',
-                                    'class'=> Product::class,
-                                    'choice_label' => 'name',
                                     'required' => false,
                                     'attr' => array(
                                         'class'=>'js-select2-product-name'
@@ -478,26 +468,20 @@ class PersonLikeProductModuleController extends AbstractController
 
         $form_person = $this->createFormBuilder()
                                 ->setMethod('GET')
-                                ->add('login', EntityType::class, [
+                                ->add('login', TextType::class, [
                                     'label'=>'Login (ATTENTION ON REGISTER!):',
-                                    'class'=> Person::class,
-                                    'choice_label' => 'login',
                                     'required' => false,
                                     'attr' => array(
                                         'class'=>'js-select2-person-login'
                                     ), ])
-                                ->add('i_name', EntityType::class, [
+                                ->add('i_name', TextType::class, [
                                     'label'=>'Name:',
-                                    'class'=> Person::class,
-                                    'choice_label' => 'i_name',
                                     'required' => false,
                                     'attr' => array(
                                         'class'=>'js-select2-person-i'
                                     ), ])
-                                ->add('f_name', EntityType::class, [
+                                ->add('f_name', TextType::class, [
                                     'label'=>'Surname:',
-                                    'class'=> Person::class,
-                                    'choice_label' => 'f_name',
                                     'required' => false,
                                     'attr' => array(
                                         'class'=>'js-select2-person-f'

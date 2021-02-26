@@ -76,7 +76,7 @@ class AjaxSearchController extends AbstractController
 
         $entityManager = $this->getDoctrine()->getManager();
         $queryBuilder = $entityManager->createQueryBuilder()
-                                                -> select('pers')
+                                                -> select('prod')
                                                 -> from ('App\Entity\Product', 'prod')
                                                 -> setParameter('key', '%'.addcslashes($key, '%_').'%') 
                                                 -> where ('prod.name LIKE :key');
@@ -100,9 +100,7 @@ class AjaxSearchController extends AbstractController
                                                 -> setParameter('key', '%'.addcslashes($key, '%_').'%')  //more secure, see https://stackoverflow.com/questions/3755718/doctrine2-dql-use-setparameter-with-wildcard-when-doing-a-like-comparison
                                                 //->setParameter('key', '%'.$key.'%') //less secure
 
-                                                -> where ('pers.login LIKE :key')
-                                                -> orWhere  ('pers.i_name LIKE :key')
-                                                -> orWhere  ('pers.f_name LIKE :key');
+                                                -> where ('pers.login LIKE :key');
         $results = $queryBuilder->getQuery()->getResult();
 
         
@@ -120,13 +118,11 @@ class AjaxSearchController extends AbstractController
 
         $returnArray=array();
         foreach($results as $result) {
-            
-            //if ($result->getLogin();
-
             array_push($returnArray, [
-                    'id' => $result->getId(),
-                    'text' => $result->getLogin(), ],
-                );
+                        'id' => $result->getId(),
+                        'login'=> $result->getLogin(),
+                        'text' => $result->getLogin(), ],
+                    );
         };
         return $this->json($returnArray);
     }
