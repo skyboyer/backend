@@ -427,9 +427,6 @@
     "symfony/serializer": {
         "version": "v5.2.1"
     },
-    "symfony/serializer-pack": {
-        "version": "v1.0.4"
-    },
     "symfony/service-contracts": {
         "version": "v2.2.0"
     },
@@ -516,6 +513,9 @@
     },
     "symfony/yaml": {
         "version": "v5.2.1"
+    },
+    "tetranz/select2entity-bundle": {
+        "version": "v2.10.1"
     },
     "twig/extra-bundle": {
         "version": "v3.2.1"

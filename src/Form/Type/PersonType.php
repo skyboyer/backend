@@ -11,29 +11,88 @@ use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 
+use Symfony\Component\Form\FormEvents;
+use Symfony\Component\Form\FormEvent;
+
+
 class PersonType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
                
         $builder
-            ->add('login', TextType::class, ['label'=>'Login (ATTENTION ON REGISTER!):'])
-            ->add('i_name', TextType::class, ['label'=>'Name:'])
-            ->add('f_name', TextType::class, ['label'=>'Surname:'])
-            ->add('state', ChoiceType::class, 
-                            ['label'=>'Choose the State:',
-                             'choices'=> [
-                                'Active' => Person::ACTIVE,
-                                'Banned' => Person::BANNED,
-                                'Deleted' => Person::DELETED,
-                                ],
-                            'placeholder'=>""
-                            ]);  
+            
+            ->add('login', ChoiceType::class, [
+                                                'label'=>'Login:',
+                                                //'class'=> Person::class,
+                                                'choices'=> [],
+                                                'required' => false,
+                                                //'mapped' => false,
+                                                'attr' => array('class'=>'js-select2-person-login'),
+                ])
+            
+            ->add('i_name', ChoiceType::class, [
+                                                'label'=>'Name:',
+                                                'required' => false,
+                                                //'mapped' => false,
+                                                'attr' => array('class'=>'js-select2-person-i'),
+                ])
+            
+            ->add('f_name', ChoiceType::class, [
+                                                'label'=>'Surname:',
+                                                'required' => false,
+                                                'attr' => array('class'=>'js-select2-person-f'),
+                ])
+            
+            ->add('state', ChoiceType::class, [
+                                                'label'=>'Choose the State:',
+                                                'choices'=> [
+                                                    'Active' => Person::ACTIVE,
+                                                    'Banned' => Person::BANNED,
+                                                    'Deleted' => Person::DELETED,
+                                                    ],
+                                                'placeholder'=>"",
+                                                'expanded'=>true, 'multiple'=>true,
+                                                'data' => [Person::ACTIVE],
+                                                'mapped' => false, 
+                ]); 
+
+        $builder->addEventListener(
+            
+            FormEvents::PRE_SUBMIT,
+                                    
+            function (FormEvent $event) 
+            {
+                $data = $event->getData();
+                $form = $event->getForm();
+                
+                $choice_login = [$data['login'] => $data['login'] ];
+                $choice_i = [$data['i_name'] => $data['i_name'] ];
+                $choice_f = [$data['f_name'] => $data['f_name'] ];
+                
+                $form->add  ('login', ChoiceType::class,  [ 
+                                                            'label'=>'Login:',
+                                                            'required' => false,
+                                                            'choices' => $choice_login,
+                                                            'attr' => array('class'=>'js-select2-person-login'),
+                            ]);
+
+                $form->add  ('i_name', ChoiceType::class,  [ 
+                                                            'label'=>'Name:',  
+                                                            'required' => false,
+                                                            'choices' => $choice_i,
+                                                            'attr' => array('class'=>'js-select2-person-i'),
+                            ]);
+                $form->add  ('f_name', ChoiceType::class,  [ 
+                                                            'label'=>'Surname:',  
+                                                            'required' => false,
+                                                            'choices' => $choice_f,
+                                                            'attr' => array('class'=>'js-select2-person-f'),
+                            ]);
+            }
+        );
     }
-
     
-
-
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([

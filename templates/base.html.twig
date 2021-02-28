@@ -18,7 +18,7 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js" integrity="sha512-T/tUfKSV1bihCnd+MxKD0Hm1uBBroVYBOYSk1knyvQ9VyZJpc/ALb4P0r6ubwVPSGB2GvjeoMAJJImBG12TiaQ==" crossorigin="anonymous"></script>
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.standalone.min.css" integrity="sha512-TQQ3J4WkE/rwojNFo6OJdyu6G8Xe9z8rMrlF9y7xpFbQfW5g8aSWcygCQ4vqRiJqFsDsE1T6MoAOMJkFXlrI9A==" crossorigin="anonymous" />
 
-
+        <script src="{{ asset('bundles/tetranzselect2entity/js/select2entity.js') }}"></script>
 
        
         {% endblock %}
@@ -62,14 +62,16 @@
                             processResults: function (data, params) { 
                                 params.page = params.page || 1;
                                 return {
-                                    results: data.items,
+                                    results: data,
                                     pagination: {
                                        more: params.page * 10 < data.total_count
                                     } 
                                 };   
                             },
                         },
-                        minimumInputLength: 2
+                        minimumInputLength: 2,
+                        allowClear: true,
+                        placeholder: '',
                     });
                 })
             </script>
@@ -98,7 +100,9 @@
                                 };   
                             },
                         },
-                        minimumInputLength: 2
+                        minimumInputLength: 2,
+                        allowClear: true,
+                        placeholder: '',
                     });
                 })
             </script>
@@ -127,7 +131,9 @@
                                 };   
                             },
                         },
-                        minimumInputLength: 2
+                        minimumInputLength: 2,
+                        allowClear: true,
+                        placeholder: '',
                     });
                 })
             </script>
@@ -135,18 +141,21 @@
             <script>
                 $(document).ready(function() {
                     $('.js-select2-person-login').select2({
+                        allowClear: true,
+                        placeholder: '',
+                        minimumInputLength: 2,
 
                         ajax: {
                             url: '/ajax/search/person/login',
                             dataType: 'json',
                             delay: 350, // wait 350 milliseconds before triggering the request
-                            
+                           
 
                             // Additional AJAX parameters go here:
                             data: function (params) {
                                 return {
                                     q: params.term, // search term
-                                    //page: params.page,
+                                    page: params.page,
                                 };
                             },
                             
@@ -154,64 +163,15 @@
                                 params.page = params.page || 1;
                                 return {
                                     results: data,
-                                    //pagination: {
-                                    //   more: params.page * 3 < data.total_count
-                                    //  } 
+                                    pagination: {
+                                        more: params.page * 3 < data.total_count
+                                    } 
                                 };   
                             },
+                        }        
                             
-            //some code for learning:
-                            /*    
-                                return {
-                                    results:[
-                                                {id: 1, text: 'tre'},
-                                                {id: 2, text: 'tre2'},
-                                            ],
-                                }
-                            */
-                           
-                            /*       
-                                return {
-                                    results: $.map(data, function(obj) {
-                                                                            if(obj.id!=0){
-                                                                                return { id: obj.id, text: obj.login };
-                                                                            }
-                                                                            else
-                                                                                {return {id: obj.id, text: obj.login}}
-                                                                        })
-                                };
-                            */
-
-                            /*   
-                                data = jQuery.map(data.results, function (obj) { 
-                                        obj.id = obj.id;
-                                        obj.text = obj.login;
-                                        //obj.i = obj.i_name;
-                                        //obj.f = obj.f_name;
-                                        //obj.state = obj.state;
-                                        return obj;
-                                    return {
-                                        results: data,
-                                        //pagination: {
-                                        //                more: params.page * 30 < data.total_count
-                                        //            }
-                                        }
-                                });   
-                            */     
-                            /*
-                                var data = jQuery.map(data, function (obj) { 
-                                    obj.text = obj.text || obj.login; // replace name with the property used for the text
-                                    return obj;
-                                    return {
-                                        results: data,
-                                    }
-                                });   
-                            */
-  
+           
                                 
-                        },
-                        minimumInputLength: 2,
-                        
                     });
                 });
             </script>

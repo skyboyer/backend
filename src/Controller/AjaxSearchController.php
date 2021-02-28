@@ -47,8 +47,17 @@ class AjaxSearchController extends AbstractController
         $results = $queryBuilder->getQuery()->getResult();
 
         $returnArray=array();
+        $i=0;
         foreach($results as $result) {
-            array_push($returnArray, ['id' => $result->getId(), 'text' => $result->getIName()] );
+            if ( empty($returnArray) ) {
+                array_push($returnArray, [ 'id' => $result->getIName(), 'text' => $result->getIName() ] );
+            }
+            else {    
+                if ( $result->getIName()!= $returnArray[$i]['text'] ) {
+                    array_push($returnArray, [ 'id' => $result->getIName(), 'text' => $result->getIName() ]  );
+                    $i=$i+1;
+                }
+            }
         };
         return $this->json($returnArray);
     }
@@ -65,8 +74,17 @@ class AjaxSearchController extends AbstractController
         $results = $queryBuilder->getQuery()->getResult();
 
         $returnArray=array();
+        $i=0;
         foreach($results as $result) {
-            array_push($returnArray, ['id' => $result->getId(), 'text' => $result->getFName()] );
+            if ( empty($returnArray) ) {
+                array_push($returnArray, [ 'id' => $result->getFName(), 'text' => $result->getFName() ] );
+            }
+            else {    
+                if ( $result->getFName()!= $returnArray[$i]['text'] ) {
+                    array_push($returnArray, [ 'id' => $result->getFName(), 'text' => $result->getFName() ]  );
+                    $i=$i+1;
+                }
+            }
         };
         return $this->json($returnArray);
     }
@@ -83,8 +101,17 @@ class AjaxSearchController extends AbstractController
         $results = $queryBuilder->getQuery()->getResult();
 
         $returnArray=array();
+        $i=0;
         foreach($results as $result) {
-            array_push($returnArray, ['id' => $result->getId(), 'text' => $result->getName()] );
+            if ( empty($returnArray) ) {
+                array_push($returnArray, [ 'id' => $result->getName(), 'text' => $result->getName() ] );
+            }
+            else {    
+                if ( $result->getName()!= $returnArray[$i]['text'] ) {
+                    array_push($returnArray, [ 'id' => $result->getName(), 'text' => $result->getName() ]  );
+                    $i=$i+1;
+                }
+            }
         };
         return $this->json($returnArray);
     }
@@ -104,7 +131,7 @@ class AjaxSearchController extends AbstractController
         $results = $queryBuilder->getQuery()->getResult();
 
         
-    //some code for learning purposes:
+//some code for learning purposes:
 
     //Find rows matching with keyword $key - DQL:
 
@@ -117,13 +144,19 @@ class AjaxSearchController extends AbstractController
         $DQLquery->execute(); */
 
         $returnArray=array();
+        $i=0;
         foreach($results as $result) {
-            array_push($returnArray, [
-                        'id' => $result->getId(),
-                        'login'=> $result->getLogin(),
-                        'text' => $result->getLogin(), ],
-                    );
+            if ( empty($returnArray) ) {
+                array_push($returnArray, ['id' => $result->getLogin(), 'text' => $result->getLogin() ] );
+            }
+            else {    
+                if ( $result->getLogin()!= $returnArray[$i]['text'] ) {
+                    array_push ($returnArray, [ 'id' => $result->getLogin(), 'text' => $result->getLogin()]  );
+                    $i=$i+1;
+                }
+            }
         };
+
         return $this->json($returnArray);
     }
 

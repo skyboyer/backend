@@ -9,6 +9,7 @@ use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\SearchType;
+use Tetranz\Select2EntityBundle\Form\Type\Select2EntityType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\ResetType;
 
@@ -28,6 +29,8 @@ use App\Repository\PersonLikeProductRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\EntityManagerInterface;
 
+
+
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 
 class PersonLikeProductModuleController extends AbstractController
@@ -43,37 +46,7 @@ class PersonLikeProductModuleController extends AbstractController
     //form for filtering persons to see their likes
         $person = new Person();
         $form_person = $this->createForm (PersonType::class, $person,['method' => 'GET'])
-                    ->add('login', ChoiceType::class, [
-                                    'label'=>'Login (ATTENTION ON REGISTER!):',
-                                    'required' => false,
-                                    'choices' => [],
-                                    
-                                    'attr' => array(
-                                        'class'=>'js-select2-person-login'
-                                    ), ])
-                    ->add('i_name', TextType::class, [
-                                    'label'=>'Name:',
-                                    'required' => false,
-                                    'attr' => array(
-                                        'class'=>'js-select2-person-i', 
-                                    ), ])
-                    ->add('f_name', TextType::class, [
-                                    'label'=>'Surname:',
-                                    'required' => false,
-                                    'attr' => array(
-                                        'class'=>'js-select2-person-f'
-                                    ), ])
-                    ->add('state', ChoiceType::class, 
-                                    ['label'=>'Choose the State:',
-                                     'choices'=> [
-                                        'Active' => Person::ACTIVE,
-                                        'Banned' => Person::BANNED,
-                                        'Deleted' => Person::DELETED],
-                                    'placeholder'=>"",
-                                    'expanded'=>true, 'multiple'=>true,
-                                    'data' => [Person::ACTIVE],
-                                    'mapped' => false])  
-                    ->add('send', SubmitType::class, ['label'=>'Show products, which these users like']);
+                            ->add('send', SubmitType::class, ['label'=>'Show products, which these users like']);
                                     
      //form for filtering products to see its lovers   
         $form_product = $this->createFormBuilder()
@@ -105,38 +78,41 @@ class PersonLikeProductModuleController extends AbstractController
         $persons=array();
                 
         if ($form_person->isSubmitted() ) {
-             
-            $login=$form_person->get('login')->getData();
-            $i_name=$form_person->get('i_name')->getData();
-            $f_name=$form_person->get('f_name')->getData();
-            $states=$form_person->get('state')->getData();
+            
+            $login=$person->getLogin();
+            $i_name=$person->getIName();
 
+                    $f_name1=$form_person->get('f_name'); //get Symfony/Component/Form/Form
+                    $f_name=$f_name1->getData(); //get object Person with name = what we write in field 
+                    $f_name=$form_person->get('f_name')->getData();  //the above code in one line
+                    // $f_name=$form_person->get('f_name')->getData()->getFName();  //get already the property "name" from person if not null
+            //or:
+            $f_name=$person->getFName(); //get already the property "name" from person
+
+            $states=$form_person->get('state')->getData();
+            
         //filtering persons based on form info
             $entityManager = $this->getDoctrine()->getManager();
             $queryBuilder = $entityManager->createQueryBuilder()
                                             -> select('pers')
                                             -> from ('App\Entity\Person', 'pers');
             if (isset($i_name)) {
-                //$i_name=$i_name->getIName();
                 $queryBuilder=$queryBuilder ->setParameter('i_name', $i_name)
                                              -> andwhere ('pers.i_name = :i_name') ;
                                             
-                                            //version with lowcaser:
-                                            /*->setParameter('i_name', strtolower($i_name))
+                                                        /*->setParameter('i_name', strtolower($i_name))
                                             -> andwhere ($queryBuilder->expr()->eq  (
                                                                                     $queryBuilder-> expr()->lower('p.i_name'), ':i_name'
                                                                                     ) 
                                                         ) */;
             }
             if (isset($f_name)) {
-                //$f_name=$f_name->getFName();
                 $queryBuilder=$queryBuilder->setParameter('f_name', $f_name)
-                                            -> andwhere ('pers.id = :f_name') ;
+                                            -> andwhere ('pers.login = :f_name') ;
             }
             if (isset($login)) {
-                //$login=$login->getLogin();
                 $queryBuilder= $queryBuilder->setParameter('login', $login)
-                                        -> andWhere('pers.id = :login');
+                                        -> andWhere('pers.login = :login');
             }
             if (!empty($states)) {
                 $queryBuilder= $queryBuilder->setParameter('states', $states)
