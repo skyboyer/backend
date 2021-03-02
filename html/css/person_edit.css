@@ -41,10 +41,12 @@ input, select, option {
 	padding: 2px;
 	box-sizing: content-box;
 }
-
 span {
 	color:red;
 	font-weight: bold;;
+}
+#person_state > * {
+	width: 50px;
 }
 
 

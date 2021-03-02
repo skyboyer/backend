@@ -38,17 +38,18 @@
                     {% endfor %} 
                 {% else %} all. <br>
                 {% endif %}
-        <h1>Their likes:</h1>
+        
+        <br><br>
             {% if match == 1 and persons is not empty %} 
                 <table>
                     <tr>
-                        <th>Login</th><th>Name, Surname</th><th>State</th> <th>Products, which this user likes </th> 
+                        <th>Login</th><th>Name, Surname</th><th>State</th> <th>THEIR LIKES: </th> 
                     </tr>
                     <tr>   
                         {% for person in persons %} 
                             <tr>
                                 <td>{{person.login}}</td>
-                                <td>{{person.iname}} {{person.fname}} <a href="{{ path('person_like_product_edit', {id_person: person.id}) }}">edit the user's likes</a> </td>
+                                <td>{{person.iname}} {{person.fname}} <a href="{{ path('person_like_product_edit', {id_person: person.id}) }}">edit this user's likes</a> </td>
                                 <td>{{person.getStateString }}</td>
                                 <td>
                                     {% for persprod in person.getPersonHaveProducts %}

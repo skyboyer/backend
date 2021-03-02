@@ -34,6 +34,9 @@ input, select, option {
 	padding: 2px;
 	box-sizing: content-box;
 }
+#person_state > * {
+	width: 50px;
+}
 
 
 

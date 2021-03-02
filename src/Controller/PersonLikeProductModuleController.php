@@ -9,7 +9,6 @@ use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
-//use Tetranz\Select2EntityBundle\Form\Type\Select2EntityType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\ResetType;
 
@@ -43,12 +42,10 @@ class PersonLikeProductModuleController extends AbstractController
     {   
     //form for filtering persons to see their likes
         $person = new Person();
-
-        $personManager = $this->getDoctrine()->getManager();
-        //$request= Request::createFromGlobals();
-        
         $form_person = $this->createForm (PersonType::class, $person,['method' => 'GET'])
-
+           
+        // unsuccessflly trying to avoid using EventLastener:
+                            
                             /*->add('login', EntityType::class, [
                                 'label'=>'Login:',
                                 'choice_label'=> 'login',
@@ -71,7 +68,42 @@ class PersonLikeProductModuleController extends AbstractController
                                 'attr' => array('class'=>'js-select2-person-login'),
                                 'mapped' => false,
                             ])   */
-                            
+                            ->add('login', ChoiceType::class, [
+                                                            'label'=>'Login:',
+                                                            'required' => false,
+                                                            'attr' => array('class'=>'js-select2-person-login'),
+                                                            'mapped' => false,
+                                                            
+                            ])
+
+                            ->add('i_name', ChoiceType::class, [
+                                                            'label'=>'Name:',
+                                                            'required' => false,
+                                                            'mapped' => false,
+                                                            'attr' => array('class'=>'js-select2-person-i'),
+                                                            'mapped' => false, 
+                            ])
+
+                            ->add('f_name', ChoiceType::class, [
+                                                            'label'=>'Surname:',
+                                                            'required' => false,
+                                                            'mapped' => false,
+                                                            'attr' => array('class'=>'js-select2-person-f'),
+                                                            'mapped' => false, 
+                            ])
+                            ->add('state', ChoiceType::class, [
+                                                                'label'=>'Choose the State:',
+                                                                'choices'=> [
+                                                                    'Active' => Person::ACTIVE,
+                                                                    'Banned' => Person::BANNED,
+                                                                    'Deleted' => Person::DELETED,
+                                                                    ],
+                                                                'placeholder'=>"",
+                                                                'expanded'=>true, 'multiple'=>true,
+                                                                'data' => [Person::ACTIVE],
+                                                                'mapped' => false, 
+                            ]) 
+
                             ->add('form_person_like_product', HiddenType::class, ['mapped' => false])
                             ->add('send', SubmitType::class, ['label'=>'Show products, which these users like']);
                                      

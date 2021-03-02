@@ -42,5 +42,7 @@ td, th {
 	border-collapse: collapse;
 	padding: 5px;
 }
-
+#person_state > * {
+	width: 50px;
+}
 

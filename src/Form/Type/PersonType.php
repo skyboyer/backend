@@ -25,26 +25,9 @@ class PersonType extends AbstractType
                
         $builder
             
-            ->add('login', ChoiceType::class, [
-                                                'label'=>'Login:',
-                                                'required' => false,
-                                                'attr' => array('class'=>'js-select2-person-login'),
-                                                'mapped' => false,
-                ])
-            
-            ->add('i_name', ChoiceType::class, [
-                                                'label'=>'Name:',
-                                                'required' => false,
-                                                'mapped' => false,
-                                                'attr' => array('class'=>'js-select2-person-i'),
-                ])
-            
-            ->add('f_name', ChoiceType::class, [
-                                                'label'=>'Surname:',
-                                                'required' => false,
-                                                'mapped' => false,
-                                                'attr' => array('class'=>'js-select2-person-f'),
-                ])
+            ->add('login', TextType::class, ['label'=>'Login (ATTENTION ON REGISTER!):'])
+            ->add('i_name', TextType::class, ['label'=>'Name:'])
+            ->add('f_name', TextType::class, ['label'=>'Surname:'])
             
             ->add('state', ChoiceType::class, [
                                                 'label'=>'Choose the State:',
@@ -54,10 +37,10 @@ class PersonType extends AbstractType
                                                     'Deleted' => Person::DELETED,
                                                     ],
                                                 'placeholder'=>"",
-                                                'expanded'=>true, 'multiple'=>true,
-                                                'data' => [Person::ACTIVE],
-                                                'mapped' => false, 
-                ]); 
+                                                //'expanded'=>true, 'multiple'=>true,
+                                                //'data' => [Person::ACTIVE],
+                                                //'mapped' => false
+                                            ]); 
 
         $builder->addEventListener(
             
@@ -72,29 +55,30 @@ class PersonType extends AbstractType
                 $choice_i = [$data['i_name'] => $data['i_name'] ];
                 $choice_f = [$data['f_name'] => $data['f_name'] ];
                 
-                
-                $form->add  ('login', ChoiceType::class,  [ 
-                                                            'label'=>'Login:',
-                                                            'required' => false,
-                                                            'choices' => $choice_login,
-                                                            'mapped' => false,
-                                                            'attr' => array('class'=>'js-select2-person-login'),
-                            ]);
+                if ($form->has('form_person_like_product')) {   
+                    $form->add  ('login', ChoiceType::class,  [ 
+                                                                'label'=>'Login:',
+                                                                'required' => false,
+                                                                'choices' => $choice_login,
+                                                                'mapped' => false,
+                                                                'attr' => array('class'=>'js-select2-person-login'),
+                                ]);
 
-                $form->add  ('i_name', ChoiceType::class,  [ 
-                                                            'label'=>'Name:',  
-                                                            'required' => false,
-                                                            'choices' => $choice_i,
-                                                            'mapped' => false,
-                                                            'attr' => array('class'=>'js-select2-person-i'),
-                            ]);
-                $form->add  ('f_name', ChoiceType::class,  [ 
-                                                            'label'=>'Surname:',  
-                                                            'required' => false,
-                                                            'choices' => $choice_f,
-                                                            'mapped' => false,
-                                                            'attr' => array('class'=>'js-select2-person-f'),
-                            ]);
+                    $form->add  ('i_name', ChoiceType::class,  [ 
+                                                                'label'=>'Name:',  
+                                                                'required' => false,
+                                                                'choices' => $choice_i,
+                                                                'mapped' => false,
+                                                                'attr' => array('class'=>'js-select2-person-i'),
+                                ]);
+                    $form->add  ('f_name', ChoiceType::class,  [ 
+                                                                'label'=>'Surname:',  
+                                                                'required' => false,
+                                                                'choices' => $choice_f,
+                                                                'mapped' => false,
+                                                                'attr' => array('class'=>'js-select2-person-f'),
+                                ]);
+                }
             }
         );
     }
