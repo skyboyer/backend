@@ -8,8 +8,8 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
-use Symfony\Component\Form\Extension\Core\Type\SearchType;
-use Tetranz\Select2EntityBundle\Form\Type\Select2EntityType;
+use Symfony\Component\Form\Extension\Core\Type\HiddenType;
+//use Tetranz\Select2EntityBundle\Form\Type\Select2EntityType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\ResetType;
 
@@ -29,8 +29,6 @@ use App\Repository\PersonLikeProductRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\EntityManagerInterface;
 
-
-
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 
 class PersonLikeProductModuleController extends AbstractController
@@ -45,13 +43,45 @@ class PersonLikeProductModuleController extends AbstractController
     {   
     //form for filtering persons to see their likes
         $person = new Person();
+
+        $personManager = $this->getDoctrine()->getManager();
+        //$request= Request::createFromGlobals();
+        
         $form_person = $this->createForm (PersonType::class, $person,['method' => 'GET'])
+
+                            /*->add('login', EntityType::class, [
+                                'label'=>'Login:',
+                                'choice_label'=> 'login',
+                                'class' => Person::class,
+                                'query_builder' => function (PersonRepository $er) {
+                                        
+                                        if (isset(Request::createFromGlobals()->query->get('person')['login']) ) {
+                                            
+                                            return $er  ->createQueryBuilder('pers')
+                                                        -> where ('pers.login LIKE :key')
+                                                        -> setParameter('key', Request::createFromGlobals()->query->get('person')['login'] );
+                                            };            
+                                                   
+                                    return $er  ->createQueryBuilder('pers')
+                                                ->orderBy('pers.login', 'ASC')
+                                                ->setMaxResults(1);
+                                },
+                                
+                                'required' => false,
+                                'attr' => array('class'=>'js-select2-person-login'),
+                                'mapped' => false,
+                            ])   */
+                            
+                            ->add('form_person_like_product', HiddenType::class, ['mapped' => false])
                             ->add('send', SubmitType::class, ['label'=>'Show products, which these users like']);
+                                     
                                     
      //form for filtering products to see its lovers   
         $form_product = $this->createFormBuilder()
                     ->setMethod('GET')
-                    ->add('name', SearchType::class, [
+                    ->add('name', EntityType::class, [
+                                    'class'=> Product::class,
+                                    'choice_label' => 'name',
                                     'label'=>'Name:',
                                     'required' => false,
                                     'attr' => array(
@@ -72,47 +102,50 @@ class PersonLikeProductModuleController extends AbstractController
 
         $form_person->handleRequest($request);      
         $form_product->handleRequest($request);
-        
+      
         $match=0; // shows, that no form is submitted
         $products=array();
         $persons=array();
                 
         if ($form_person->isSubmitted() ) {
             
-            $login=$person->getLogin();
-            $i_name=$person->getIName();
+            $login=$form_person->get('login')->getData();
+            $i_name=$form_person->get('i_name')->getData();
 
-                    $f_name1=$form_person->get('f_name'); //get Symfony/Component/Form/Form
-                    $f_name=$f_name1->getData(); //get object Person with name = what we write in field 
-                    $f_name=$form_person->get('f_name')->getData();  //the above code in one line
+            //$f_name1=$form_person->get('f_name'); //get Symfony/Component/Form/Form
+            //$f_name=$f_name1->getData(); //get object Person with name = what we write in field 
+            $f_name=$form_person->get('f_name')->getData();  //the above code in one line
                     // $f_name=$form_person->get('f_name')->getData()->getFName();  //get already the property "name" from person if not null
             //or:
-            $f_name=$person->getFName(); //get already the property "name" from person
+            //$f_name=$person->getFName(); //get already the property "name" from person if EntityType
 
             $states=$form_person->get('state')->getData();
             
-        //filtering persons based on form info
+        //filtering persons based on form info:
             $entityManager = $this->getDoctrine()->getManager();
             $queryBuilder = $entityManager->createQueryBuilder()
                                             -> select('pers')
                                             -> from ('App\Entity\Person', 'pers');
-            if (isset($i_name)) {
+            if ($i_name !='') {
                 $queryBuilder=$queryBuilder ->setParameter('i_name', $i_name)
-                                             -> andwhere ('pers.i_name = :i_name') ;
-                                            
-                                                        /*->setParameter('i_name', strtolower($i_name))
-                                            -> andwhere ($queryBuilder->expr()->eq  (
-                                                                                    $queryBuilder-> expr()->lower('p.i_name'), ':i_name'
-                                                                                    ) 
-                                                        ) */;
+                                            -> andwhere ($queryBuilder->expr()->eq  ( 
+                                                                                        $queryBuilder-> expr()->lower('pers.i_name'), ':i_name'
+                                                                                    ) );
+                                            /*  -> andwhere ('pers.i_name = :i_name') ;
+                                                ->setParameter('i_name', strtolower($i_name))
+                                               );*/
             }
-            if (isset($f_name)) {
+            if ($f_name !='') {
                 $queryBuilder=$queryBuilder->setParameter('f_name', $f_name)
-                                            -> andwhere ('pers.login = :f_name') ;
+                                            -> andwhere ($queryBuilder->expr()->eq  ( 
+                                                                                        $queryBuilder-> expr()->lower('pers.f_name'), ':f_name'
+                                                                                    ) );
             }
             if (isset($login)) {
                 $queryBuilder= $queryBuilder->setParameter('login', $login)
-                                        -> andWhere('pers.login = :login');
+                                            -> andwhere ($queryBuilder->expr()->eq  ( 
+                                                                                        $queryBuilder-> expr()->lower('pers.login'), ':login'
+                                                                                    ) );
             }
             if (!empty($states)) {
                 $queryBuilder= $queryBuilder->setParameter('states', $states)
@@ -210,7 +243,10 @@ class PersonLikeProductModuleController extends AbstractController
         if ($form_product->isSubmitted() ) {
             
             $data = $form_product->getData();
-            $name=$data['name'];
+
+            $name=$form_product->get('name')->getData();
+            //$name=$data['name'];
+
             $date_from=$data['date_from'];
             $date_to=$data['date_to'];
 

@@ -7,6 +7,9 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
+use Symfony\Component\Form\Form;
+use Symfony\Component\Form\AbstractType;
+
 /**
  * @ORM\Entity(repositoryClass=PersonRepository::class)
  */

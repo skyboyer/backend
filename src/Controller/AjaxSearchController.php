@@ -42,21 +42,17 @@ class AjaxSearchController extends AbstractController
         $queryBuilder = $entityManager->createQueryBuilder()
                                                 -> select('pers')
                                                 -> from ('App\Entity\Person', 'pers')
-                                                -> setParameter('key', '%'.addcslashes($key, '%_').'%') 
+                                                -> setParameter('key', addcslashes($key, '%_').'%') 
                                                 -> where ('pers.i_name LIKE :key');
         $results = $queryBuilder->getQuery()->getResult();
 
         $returnArray=array();
-        $i=0;
         foreach($results as $result) {
-            if ( empty($returnArray) ) {
-                array_push($returnArray, [ 'id' => $result->getIName(), 'text' => $result->getIName() ] );
-            }
-            else {    
-                if ( $result->getIName()!= $returnArray[$i]['text'] ) {
-                    array_push($returnArray, [ 'id' => $result->getIName(), 'text' => $result->getIName() ]  );
-                    $i=$i+1;
-                }
+            $i_name= strtolower($result->getIName() ); 
+            $elem = [ 'id' => $i_name, 'text' => $i_name ];
+
+            if ( !in_array($elem, $returnArray) ) {
+                array_push ($returnArray, $elem );
             }
         };
         return $this->json($returnArray);
@@ -69,21 +65,17 @@ class AjaxSearchController extends AbstractController
         $queryBuilder = $entityManager->createQueryBuilder()
                                                 -> select('pers')
                                                 -> from ('App\Entity\Person', 'pers')
-                                                -> setParameter('key', '%'.addcslashes($key, '%_').'%') 
+                                                -> setParameter('key', addcslashes($key, '%_').'%') 
                                                 -> where ('pers.f_name LIKE :key');
         $results = $queryBuilder->getQuery()->getResult();
 
         $returnArray=array();
-        $i=0;
         foreach($results as $result) {
-            if ( empty($returnArray) ) {
-                array_push($returnArray, [ 'id' => $result->getFName(), 'text' => $result->getFName() ] );
-            }
-            else {    
-                if ( $result->getFName()!= $returnArray[$i]['text'] ) {
-                    array_push($returnArray, [ 'id' => $result->getFName(), 'text' => $result->getFName() ]  );
-                    $i=$i+1;
-                }
+            $f_name= strtolower($result->getFName() ); 
+            $elem = [ 'id' => $f_name, 'text' => $f_name ];
+
+            if ( !in_array($elem, $returnArray) ) {
+                array_push ($returnArray, $elem );
             }
         };
         return $this->json($returnArray);
@@ -96,21 +88,17 @@ class AjaxSearchController extends AbstractController
         $queryBuilder = $entityManager->createQueryBuilder()
                                                 -> select('prod')
                                                 -> from ('App\Entity\Product', 'prod')
-                                                -> setParameter('key', '%'.addcslashes($key, '%_').'%') 
+                                                -> setParameter('key', addcslashes($key, '%_').'%') 
                                                 -> where ('prod.name LIKE :key');
         $results = $queryBuilder->getQuery()->getResult();
 
         $returnArray=array();
-        $i=0;
         foreach($results as $result) {
-            if ( empty($returnArray) ) {
-                array_push($returnArray, [ 'id' => $result->getName(), 'text' => $result->getName() ] );
-            }
-            else {    
-                if ( $result->getName()!= $returnArray[$i]['text'] ) {
-                    array_push($returnArray, [ 'id' => $result->getName(), 'text' => $result->getName() ]  );
-                    $i=$i+1;
-                }
+            $name= strtolower($result->getName() ); 
+            $elem = [ 'id' => $name, 'text' => $name ];
+
+            if ( !in_array($elem, $returnArray) ) {
+                array_push ($returnArray, $elem );
             }
         };
         return $this->json($returnArray);
@@ -124,7 +112,8 @@ class AjaxSearchController extends AbstractController
         $queryBuilder = $entityManager->createQueryBuilder()
                                                 -> select('pers')
                                                 -> from ('App\Entity\Person', 'pers')
-                                                -> setParameter('key', '%'.addcslashes($key, '%_').'%')  //more secure, see https://stackoverflow.com/questions/3755718/doctrine2-dql-use-setparameter-with-wildcard-when-doing-a-like-comparison
+                                                -> setParameter('key', addcslashes($key, '%_').'%') 
+                                                //-> setParameter('key', '%'.addcslashes($key, '%_').'%')  //more secure, see https://stackoverflow.com/questions/3755718/doctrine2-dql-use-setparameter-with-wildcard-when-doing-a-like-comparison
                                                 //->setParameter('key', '%'.$key.'%') //less secure
 
                                                 -> where ('pers.login LIKE :key');
@@ -144,16 +133,13 @@ class AjaxSearchController extends AbstractController
         $DQLquery->execute(); */
 
         $returnArray=array();
-        $i=0;
+       
         foreach($results as $result) {
-            if ( empty($returnArray) ) {
-                array_push($returnArray, ['id' => $result->getLogin(), 'text' => $result->getLogin() ] );
-            }
-            else {    
-                if ( $result->getLogin()!= $returnArray[$i]['text'] ) {
-                    array_push ($returnArray, [ 'id' => $result->getLogin(), 'text' => $result->getLogin()]  );
-                    $i=$i+1;
-                }
+            $login= strtolower($result->getLogin() ); 
+            $elem = [ 'id' => $login, 'text' => $login ];
+
+            if ( !in_array($elem, $returnArray) ) {
+                array_push ($returnArray, $elem );
             }
         };
 

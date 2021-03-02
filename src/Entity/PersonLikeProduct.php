@@ -5,6 +5,9 @@ namespace App\Entity;
 use App\Repository\PersonLikeProductRepository;
 use Doctrine\ORM\Mapping as ORM;
 
+use Symfony\Component\Form\Form;
+use Symfony\Component\Form\AbstractType;
+
 /**
  * Class PersonLikeProduct
  * @ORM\Entity 
