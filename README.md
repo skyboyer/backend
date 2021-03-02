@@ -9,9 +9,9 @@ Pages:
 
 /localhost/index.php/product - list of products with links to adding/editing products
 
-/localhost/index.php/person - ist of products with links to adding/editing persons
+/localhost/index.php/person - list of products with links to adding/editing persons
 
-/localhost/index.php/person/like/product - filter for user's preferencies/product's lovers with links to adding/remowing user's likes or links to adding/removing product's lovers
+/localhost/index.php/person/like/product - <select> fields filter with Select2-ajax plugin  for user's preferencies/product's lovers with links to adding/remowing user's likes or links to adding/removing product's lovers
 
 
 
