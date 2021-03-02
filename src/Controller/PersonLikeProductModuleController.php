@@ -73,7 +73,7 @@ class PersonLikeProductModuleController extends AbstractController
                                                             'required' => false,
                                                             'attr' => array('class'=>'js-select2-person-login'),
                                                             'mapped' => false,
-                                                            
+
                             ])
 
                             ->add('i_name', ChoiceType::class, [
@@ -174,7 +174,6 @@ class PersonLikeProductModuleController extends AbstractController
                                                                                     ) );
             }
             if ($login !='') {
-                //$login=$login->getLogin();
                 $queryBuilder= $queryBuilder->setParameter('login', $login)
                                             -> andwhere ($queryBuilder->expr()->eq  ( 
                                                                                         $queryBuilder-> expr()->lower('pers.login'), ':login'
@@ -331,13 +330,13 @@ class PersonLikeProductModuleController extends AbstractController
     //editing info about person's likes    
         $personManager = $this->getDoctrine()->getManager();
         $person = $personManager->getRepository(Person::class)->find($id_person);
+        $personHaveProducts = $person->getPersonHaveProducts();  //collection - not array    -//500 risk???
 
-    //making array of liked Products objects    -??? >500 ??
-        $personHaveProducts = $person->getPersonHaveProducts();
+    //making array of liked Products objects    
         $productsLiked = array();
-        foreach ($personHaveProducts as $personHaveProduct) {
+        foreach ($personHaveProducts as $personHaveProduct) {    //500 risk
             array_push($productsLiked, $personHaveProduct->getProduct());
-        }
+        }      //or here may be queryBuilder with 2 joins!!!
 
     //form for chose products to like    
         $form_product = $this->createFormBuilder()
@@ -433,7 +432,7 @@ class PersonLikeProductModuleController extends AbstractController
     {
         $requestForm=$this->session->get('sessionForm'); 
         
-    // extracting array of PersonLikeProduct objects for the chosen product and person
+    // extracting array of PersonLikeProduct - 1 object for the chosen product and person
         $personLikeProductManager = $this->getDoctrine()->getManager();
         $personLikeProductArray = $personLikeProductManager->getRepository(PersonLikeProduct::class)
                                                         ->findBy ([
@@ -504,84 +503,93 @@ class PersonLikeProductModuleController extends AbstractController
         $productManager = $this->getDoctrine()->getManager();
         $product = $productManager->getRepository(Product::class)->find($id_product);
 
-        $productHavePersons = $product->getProductHavePersons();
+        $productHavePersons = $product->getProductHavePersons();  //collection - not array //500 error risk????
         
-        $personsLoved = array();
+        $personsLoved = array();              //500 error risk????
         foreach ($productHavePersons as $productHavePerson) {
             array_push($personsLoved, $productHavePerson->getPerson());
-        }
+        }  //or here may be queryBuilder with 2 joins!!!
 
-        $form_person = $this->createFormBuilder()
-                                ->setMethod('GET')
-                                ->add('login', TextType::class, [
-                                    'label'=>'Login (ATTENTION ON REGISTER!):',
-                                    'required' => false,
-                                    'attr' => array(
-                                        'class'=>'js-select2-person-login'
-                                    ), ])
-                                ->add('i_name', TextType::class, [
-                                    'label'=>'Name:',
-                                    'required' => false,
-                                    'attr' => array(
-                                        'class'=>'js-select2-person-i'
-                                    ), ])
-                                ->add('f_name', TextType::class, [
-                                    'label'=>'Surname:',
-                                    'required' => false,
-                                    'attr' => array(
-                                        'class'=>'js-select2-person-f'
-                                    ), ])
-                                ->add('state', ChoiceType::class, ['label'=>'User\'s state:',
-                                                            'placeholder'=>"",
-                                                            //'required' => true,
-                                                            'expanded'=>true, 'multiple'=>true,
-                                                            'choices'=> [
-                                                                'Active' => Person::ACTIVE,
-                                                                'Banned' => Person::BANNED,
-                                                                'Deleted' => Person::DELETED,
-                                                                ],
-                                                            'data' => [Person::ACTIVE],
-                                                            ])
-                                ->add('send', SubmitType::class, ['label'=>'Show users'])
-                                ->getForm();
+        $person = new Person();
+        $form_person = $this->createForm (PersonType::class, $person,['method' => 'GET'])
+                                ->add('login', ChoiceType::class, [
+                                            'label'=>'Login:',
+                                            'required' => false,
+                                            'attr' => array('class'=>'js-select2-person-login'),
+                                            'mapped' => false,
+                                ])
 
+                                ->add('i_name', ChoiceType::class, [
+                                            'label'=>'Name:',
+                                            'required' => false,
+                                            'mapped' => false,
+                                            'attr' => array('class'=>'js-select2-person-i'),
+                                            'mapped' => false, 
+                                ])
+
+                                ->add('f_name', ChoiceType::class, [
+                                            'label'=>'Surname:',
+                                            'required' => false,
+                                            'mapped' => false,
+                                            'attr' => array('class'=>'js-select2-person-f'),
+                                            'mapped' => false, 
+                                ])
+                                ->add('state', ChoiceType::class, [
+                                                'label'=>'Choose the State:',
+                                                'choices'=> [
+                                                    'Active' => Person::ACTIVE,
+                                                    'Banned' => Person::BANNED,
+                                                    'Deleted' => Person::DELETED,
+                                                    ],
+                                                'placeholder'=>"",
+                                                'expanded'=>true, 'multiple'=>true,
+                                                'data' => [Person::ACTIVE],
+                                                'mapped' => false, 
+                                ]) 
+
+                                ->add('form_person_like_product', HiddenType::class, ['mapped' => false])
+                                ->add('send', SubmitType::class, ['label'=>'Show users']);
+                               
         $form_person->handleRequest($request);
                 
         $request= Request::createFromGlobals();
-        $requestForm=$request->query->get('form');
+        $requestForm=$request->query->get('person');
         $this->session->set('sessionFormPerson', $requestForm  );
+        
         $persons=array();
         
         if ($form_person->isSubmitted() ) {
                            
-            $data = $form_person->getData();
-            $login=$data['login'];
-            $i_name=$data['i_name'];
-            $f_name=$data['f_name'];
-            $state=$data['state'];
+            $login=$form_person->get('login')->getData();
+            $i_name=$form_person->get('i_name')->getData();
+            $f_name=$form_person->get('f_name')->getData();
+            $states=$form_person->get('state')->getData();
 
             $entityManager = $this->getDoctrine()->getManager();
             $queryBuilder = $entityManager->createQueryBuilder()
-                                            -> select('p')
-                                            -> from ('App\Entity\Person', 'p');
-            if (isset($i_name)) {
-                $i_name=$i_name->getIName();
+                                            -> select('pers')
+                                            -> from ('App\Entity\Person', 'pers');
+            if ($i_name !='') {
                 $queryBuilder=$queryBuilder->setParameter('i_name', $i_name)
-                                            -> andwhere ('p.i_name = :i_name');
+                                            -> andwhere ($queryBuilder->expr()->eq (
+                                                                                    $queryBuilder-> expr()->lower('pers.i_name'), ':i_name'
+                                                                                    )  );
             }
-            if (isset($f_name)) {
-                $f_name=$f_name->getFName();
+            if ($f_name !='') {
                 $queryBuilder=$queryBuilder->setParameter('f_name', $f_name)
-                                            -> andwhere ('p.f_name = :f_name');
+                                            -> andwhere ($queryBuilder->expr()->eq  ( 
+                                                                                        $queryBuilder-> expr()->lower('pers.f_name'), ':f_name'
+                                                                                    ) );
             }
-            if (isset($login)) {
-                $login=$login->getLogin();
+            if ($login !='') {
                 $queryBuilder= $queryBuilder->setParameter('login', $login)
-                                        -> andWhere('p.login = :login');
+                                            -> andwhere ($queryBuilder->expr()->eq  ( 
+                                                                                        $queryBuilder-> expr()->lower('pers.login'), ':login'
+                                                                                    ) );
             }
-            if (!empty($state)) {
-                $queryBuilder= $queryBuilder->setParameter('state', $state)
-                                            -> andWhere('p.state in (:state)');
+            if (!empty($states)) {
+                $queryBuilder= $queryBuilder->setParameter('states', $states)
+                                            -> andWhere('pers.state in (:states)');
             }
             $persons = $queryBuilder->getQuery()->getResult();
 
@@ -616,7 +624,7 @@ class PersonLikeProductModuleController extends AbstractController
     {
         $requestForm=$this->session->get('sessionFormPerson'); 
         
-    // extracting array of PersonLikeProduct objects for the chosen product and person        
+    // extracting array of PersonLikeProduct - 1 object for the chosen product and person        
         $productLikePersonManager = $this->getDoctrine()->getManager();
         $productLikePersonArray = $productLikePersonManager->getRepository(PersonLikeProduct::class)
                                                         ->findBy ([
@@ -640,12 +648,12 @@ class PersonLikeProductModuleController extends AbstractController
             $productLikePersonManager ->flush();
 
         //reconstraction of chosen/not chosen products (by getting saved GET form parameters) 
-            $request= Request::createFromGlobals();
+            //$request= Request::createFromGlobals();
             $requestForm=$this->session->get('sessionFormPerson'); 
         }
         
         return $this->redirectToRoute( 'product_like_person_edit', ['id_product'=> $id_product,
-                                                                    'form'=>$requestForm]);
+                                                                    'person'=>$requestForm]);
     }
 
     public function product_like_person_delete ($id_product, $id_person)

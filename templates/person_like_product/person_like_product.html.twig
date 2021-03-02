@@ -46,13 +46,13 @@
                         <th>Login</th><th>Name, Surname</th><th>State</th> <th>THEIR LIKES: </th> 
                     </tr>
                     <tr>   
-                        {% for person in persons %} 
+                        {% for person in persons %} {# 500 risk ??#}
                             <tr>
                                 <td>{{person.login}}</td>
                                 <td>{{person.iname}} {{person.fname}} <a href="{{ path('person_like_product_edit', {id_person: person.id}) }}">edit this user's likes</a> </td>
                                 <td>{{person.getStateString }}</td>
                                 <td>
-                                    {% for persprod in person.getPersonHaveProducts %}
+                                    {% for persprod in person.getPersonHaveProducts %}  {# 500 risk ??#}
                                         {{ persprod.getProduct.getName }} <br>
                                     {% endfor %}   
                                 </td>

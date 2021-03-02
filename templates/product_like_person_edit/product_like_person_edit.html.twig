@@ -1,7 +1,7 @@
 {% extends 'base.html.twig' %}
 
 {% block stylesheets1 %}
-    <link rel="stylesheet" href="/css/product_like_person_edit.css">
+    <link rel="stylesheet" href="/css/product_like_person_edit1.css">
 {% endblock %}
 
 {% block content %} 
@@ -39,7 +39,7 @@
         
         {{ form(form_person) }}
 
-        <button type="button"><a class="button" href="{{ path('product_like_person_edit', {id_product: product.id}) }}">RESET</a></button><br>
+        <button id='reset' type="button"><a class="button" href="{{ path('product_like_person_edit', {id_product: product.id}) }}">RESET</a></button><br>
 
         {% if persons is not empty  %}
             <h1>Choose new lovers:</h1>

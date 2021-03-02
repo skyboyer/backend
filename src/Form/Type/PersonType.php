@@ -37,9 +37,7 @@ class PersonType extends AbstractType
                                                     'Deleted' => Person::DELETED,
                                                     ],
                                                 'placeholder'=>"",
-                                                //'expanded'=>true, 'multiple'=>true,
-                                                //'data' => [Person::ACTIVE],
-                                                //'mapped' => false
+                                                
                                             ]); 
 
         $builder->addEventListener(
