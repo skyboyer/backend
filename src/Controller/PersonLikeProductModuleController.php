@@ -8,8 +8,8 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
-use Symfony\Component\Form\Extension\Core\Type\SearchType;
-use Tetranz\Select2EntityBundle\Form\Type\Select2EntityType;
+use Symfony\Component\Form\Extension\Core\Type\HiddenType;
+//use Tetranz\Select2EntityBundle\Form\Type\Select2EntityType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\ResetType;
 
@@ -29,8 +29,6 @@ use App\Repository\PersonLikeProductRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\EntityManagerInterface;
 
-
-
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 
 class PersonLikeProductModuleController extends AbstractController
@@ -45,8 +43,38 @@ class PersonLikeProductModuleController extends AbstractController
     {   
     //form for filtering persons to see their likes
         $person = new Person();
+
+        $personManager = $this->getDoctrine()->getManager();
+        //$request= Request::createFromGlobals();
+        
         $form_person = $this->createForm (PersonType::class, $person,['method' => 'GET'])
+
+                            /*->add('login', EntityType::class, [
+                                'label'=>'Login:',
+                                'choice_label'=> 'login',
+                                'class' => Person::class,
+                                'query_builder' => function (PersonRepository $er) {
+                                        
+                                        if (isset(Request::createFromGlobals()->query->get('person')['login']) ) {
+                                            
+                                            return $er  ->createQueryBuilder('pers')
+                                                        -> where ('pers.login LIKE :key')
+                                                        -> setParameter('key', Request::createFromGlobals()->query->get('person')['login'] );
+                                            };            
+                                                   
+                                    return $er  ->createQueryBuilder('pers')
+                                                ->orderBy('pers.login', 'ASC')
+                                                ->setMaxResults(1);
+                                },
+                                
+                                'required' => false,
+                                'attr' => array('class'=>'js-select2-person-login'),
+                                'mapped' => false,
+                            ])   */
+                            
+                            ->add('form_person_like_product', HiddenType::class, ['mapped' => false])
                             ->add('send', SubmitType::class, ['label'=>'Show products, which these users like']);
+                                     
                                     
      //form for filtering products to see its lovers   
         $form_product = $this->createFormBuilder()
@@ -74,7 +102,7 @@ class PersonLikeProductModuleController extends AbstractController
 
         $form_person->handleRequest($request);      
         $form_product->handleRequest($request);
-        
+      
         $match=0; // shows, that no form is submitted
         $products=array();
         $persons=array();
