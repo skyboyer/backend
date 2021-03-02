@@ -594,7 +594,7 @@ class PersonLikeProductModuleController extends AbstractController
             $persons = $queryBuilder->getQuery()->getResult();
 
             $request= Request::createFromGlobals();
-            $requestForm=$request->query->get('form');
+            $requestForm=$request->query->get('person');
             $this->session->set('sessionFormPerson', $requestForm  );
             
             $contents = $this->renderView('product_like_person_edit/product_like_person_edit.html.twig', [
@@ -648,7 +648,6 @@ class PersonLikeProductModuleController extends AbstractController
             $productLikePersonManager ->flush();
 
         //reconstraction of chosen/not chosen products (by getting saved GET form parameters) 
-            //$request= Request::createFromGlobals();
             $requestForm=$this->session->get('sessionFormPerson'); 
         }
         
@@ -688,7 +687,7 @@ class PersonLikeProductModuleController extends AbstractController
         $requestForm=$this->session->get('sessionFormPerson'); 
         
         return $this->redirectToRoute( 'product_like_person_edit', ['id_product'=> $id_product,
-                                                                    'form'=>$requestForm]);
+                                                                    'person'=>$requestForm]);
     }
 
 }
