@@ -28,21 +28,13 @@ class PersonModuleController extends AbstractController
     // filter for persons
         $person = new Person();
         $form_person = $this->createForm (PersonType::class, $person,['method' => 'GET'])
-        
-                    ->add('login', TextType::class, ['label'=>'Login:'] )
-                    ->add('state', ChoiceType::class, [
-                                                    'label'=>'Choose the State:',
-                                                    'choices'=> [
-                                                        'Active' => Person::ACTIVE,
-                                                        'Banned' => Person::BANNED,
-                                                        'Deleted' => Person::DELETED,
-                                                        ],
-                                                    'placeholder'=>"",
-                                                    'expanded'=>true, 'multiple'=>true,
-                                                    'data' => [Person::ACTIVE],
-                                                    'mapped' => false, 
-                                                ]) 
-                    ->add('send', SubmitType::class, ['label'=>'Show the chosen users']);
+                                        ->add('login', TextType::class, ['label'=>'Login:',
+                                                                        'required' => false])
+                                        ->add('i_name', TextType::class, ['label'=>'Name:',
+                                                                        'required' => false])
+                                        ->add('f_name', TextType::class, ['label'=>'Surname:',
+                                                                        'required' => false])
+                                        ->add('send', SubmitType::class, ['label'=>'Show the chosen users']);
                     
         $form_person->handleRequest($request);
 
@@ -120,8 +112,18 @@ class PersonModuleController extends AbstractController
                 
     //form for editing person data 
         $form = $this->createForm (PersonType::class, $person)
-                        
-                        ->add('save', SubmitType::class, ['label'=> 'Save changes']);
+                                        ->add('login', TextType::class, ['label'=>'Login:'])
+                                        ->add('i_name', TextType::class, ['label'=>'Name:'])
+                                        ->add('f_name', TextType::class, ['label'=>'Surname:'])
+                                        ->add('state', ChoiceType::class, [
+                                                                            'label'=>'Choose the State:',
+                                                                            'choices'=> [
+                                                                                'Active' => Person::ACTIVE,
+                                                                                'Banned' => Person::BANNED,
+                                                                                'Deleted' => Person::DELETED,
+                                                                                ],
+                                                                            'placeholder'=>""])
+                                        ->add('save', SubmitType::class, ['label'=> 'Save changes']);
                      
         $form->handleRequest($request);
             

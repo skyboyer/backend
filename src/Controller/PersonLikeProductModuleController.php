@@ -68,70 +68,17 @@ class PersonLikeProductModuleController extends AbstractController
                                 'attr' => array('class'=>'js-select2-person-login'),
                                 'mapped' => false,
                             ])   */
-                            ->add('login', ChoiceType::class, [
-                                                            'label'=>'Login:',
-                                                            'required' => false,
-                                                            'attr' => array('class'=>'js-select2-person-login'),
-                                                            'mapped' => false,
-
-                            ])
-
-                            ->add('i_name', ChoiceType::class, [
-                                                            'label'=>'Name:',
-                                                            'required' => false,
-                                                            'mapped' => false,
-                                                            'attr' => array('class'=>'js-select2-person-i'),
-                                                            'mapped' => false, 
-                            ])
-
-                            ->add('f_name', ChoiceType::class, [
-                                                            'label'=>'Surname:',
-                                                            'required' => false,
-                                                            'mapped' => false,
-                                                            'attr' => array('class'=>'js-select2-person-f'),
-                                                            'mapped' => false, 
-                            ])
-                            ->add('state', ChoiceType::class, [
-                                                                'label'=>'Choose the State:',
-                                                                'choices'=> [
-                                                                    'Active' => Person::ACTIVE,
-                                                                    'Banned' => Person::BANNED,
-                                                                    'Deleted' => Person::DELETED,
-                                                                    ],
-                                                                'placeholder'=>"",
-                                                                'expanded'=>true, 'multiple'=>true,
-                                                                'data' => [Person::ACTIVE],
-                                                                'mapped' => false, 
-                            ]) 
-
+                            
                             ->add('form_person_like_product', HiddenType::class, ['mapped' => false])
                             ->add('send', SubmitType::class, ['label'=>'Show products, which these users like']);
                                      
                                     
      //form for filtering products to see its lovers   
-        $form_product = $this->createFormBuilder()
-                    ->setMethod('GET')
-                    ->add('name', EntityType::class, [
-                                    'class'=> Product::class,
-                                    'choice_label' => 'name',
-                                    'label'=>'Name:',
-                                    'required' => false,
-                                    'attr' => array(
-                                        'class'=>'js-select2-product-name'
-                                    ), ])
-                    ->add('date_from', DateType::class, ['label'=>'Publication date from:',
-                                        'required' => false,
-                                        'widget' => 'single_text',
-                                        'html5' => false,
-                                        'attr' => ['class' => 'js-datepicker', 'readonly'=>'readonly'] ])
-                    ->add('date_to', DateType::class, ['label'=>'Publication date to:',
-                                        'required' => false,
-                                        'widget' => 'single_text',
-                                        'html5' => false,
-                                        'attr' => ['class' => 'js-datepicker', 'readonly'=>'readonly'] ])
-                    ->add('send', SubmitType::class, ['label'=>'Show users, who love these products'])
-                    ->getForm();
-
+        $product = new Product();
+        $form_product = $this->createForm (ProductType::class, $product,['method' => 'GET'])
+                                        ->add('form_product_like_person', HiddenType::class, ['mapped' => false])
+                                        ->add('send', SubmitType::class, ['label'=>'Show users, who love these products']);
+        
         $form_person->handleRequest($request);      
         $form_product->handleRequest($request);
       
@@ -274,33 +221,30 @@ class PersonLikeProductModuleController extends AbstractController
 
         if ($form_product->isSubmitted() ) {
             
-            $data = $form_product->getData();
-
             $name=$form_product->get('name')->getData();
-            //$name=$data['name'];
-
-            $date_from=$data['date_from'];
-            $date_to=$data['date_to'];
-
+            $date_from=$form_product->get('date_from')->getData();
+            $date_to=$form_product->get('date_to')->getData();
+        
         //filtering products based on form info
             $entityManager = $this->getDoctrine()->getManager();
             $queryBuilder = $entityManager->createQueryBuilder()
-                                            -> select('p')
-                                            -> from ('App\Entity\Product', 'p');
+                                            -> select('prod')
+                                            -> from ('App\Entity\Product', 'prod');
             if (isset($date_from) ) {
                 $date_from=date_format($date_from, 'Y-m-d');
                 $queryBuilder=$queryBuilder->setParameter('date_from', $date_from)
-                                            ->andwhere ('p.public_date >= :date_from');
+                                            ->andwhere ('prod.public_date >= :date_from');
             }
             if (isset($date_to) ) {
                 $date_to=date_format($date_to, 'Y-m-d');
                 $queryBuilder=$queryBuilder->setParameter('date_to', $date_to)
-                                            ->andwhere ('p.public_date<= :date_to');
+                                            ->andwhere ('prod.public_date<= :date_to');
             }
-            if (isset($name)) {
-                //$name=$name->getName();
+            if ($name !='') {
                 $queryBuilder=$queryBuilder->setParameter('name', $name)
-                                            ->andwhere ('p.name = :name');
+                                            -> andwhere ($queryBuilder->expr()->eq  ( 
+                                                                                    $queryBuilder-> expr()->lower('prod.name'), ':name'
+                                                                                ) );
             }
             $products = $queryBuilder->getQuery()->getResult();
             
@@ -334,76 +278,54 @@ class PersonLikeProductModuleController extends AbstractController
 
     //making array of liked Products objects    
         $productsLiked = array();
-        foreach ($personHaveProducts as $personHaveProduct) {    //500 risk
+        foreach ($personHaveProducts as $personHaveProduct) {    //500 risk ??
             array_push($productsLiked, $personHaveProduct->getProduct());
         }      //or here may be queryBuilder with 2 joins!!!
 
     //form for chose products to like    
-        $form_product = $this->createFormBuilder()
-                    ->setMethod('GET')
-                    ->add('name', TextType::class, [
-                                    'label'=>'Name:',
-                                    'required' => false,
-                                    'attr' => array(
-                                        'class'=>'js-select2-product-name'
-                                    ), ])
-                    ->add('date_from', DateType::class, ['label'=>'Publication date from:',
-                                        'required' => false,
-                                        'widget' => 'single_text',
-                                        'html5' => false,
-                                        'attr' => ['class' => 'js-datepicker', 'readonly'=>'readonly'] ])
-                    ->add('date_to', DateType::class, ['label'=>'Publication date to:',
-                                        'required' => false,
-                                        'widget' => 'single_text',
-                                        'html5' => false,
-                                        'attr' => ['class' => 'js-datepicker', 'readonly'=>'readonly'] ])
-                    ->add('send', SubmitType::class, ['label'=>'Show products'])
-                    ->getForm();
-
+        $product = new Product();
+        $form_product = $this->createForm (ProductType::class, $product,['method' => 'GET'])
+                                ->add('form_product_like_person', HiddenType::class, ['mapped' => false])
+                                ->add('send', SubmitType::class, ['label'=>'Show products']);
+       
         $form_product->handleRequest($request);
                 
-    //saving info about chosen/not chosen products (by saving GET form parameters) 
-        $request= Request::createFromGlobals();
-        $requestForm=$request->query->get('form');
-        $this->session->set('sessionForm', $requestForm  );
-        
+    //filtering products   
         $products=array();
-
-    //filtering products    
         if ($form_product->isSubmitted() ) {
                            
-            $data = $form_product->getData();
-            $name=$data['name'];
-            $date_from=$data['date_from'];
-            $date_to=$data['date_to'];
+            $name=$form_product->get('name')->getData();
+            $date_from=$form_product->get('date_from')->getData();
+            $date_to=$form_product->get('date_to')->getData();
 
             $entityManager = $this->getDoctrine()->getManager();
             $queryBuilder = $entityManager->createQueryBuilder()
-                                        -> select('p')
-                                        -> from ('App\Entity\Product', 'p')
-                                        -> orderBy('p.public_date', 'ASC');
+                                        -> select('prod')
+                                        -> from ('App\Entity\Product', 'prod')
+                                        -> orderBy('prod.public_date', 'ASC');
             if (isset($date_from) ) {
                 $date_from=date_format($date_from, 'Y-m-d');
                 $queryBuilder=$queryBuilder->setParameter('date_from', $date_from)
-                                            ->andwhere ('p.public_date >= :date_from');
+                                            ->andwhere ('prod.public_date >= :date_from');
             }
                                                                            
             if (isset($date_to) ) {
                 $date_to=date_format($date_to, 'Y-m-d');
                 $queryBuilder=$queryBuilder->setParameter('date_to', $date_to)
-                                            ->andwhere ('p.public_date<= :date_to');
+                                            ->andwhere ('prod.public_date<= :date_to');
             }  
-            if (isset($name)) {
-                $name=$name->getName();
+            if ($name !='') {
                 $queryBuilder=$queryBuilder->setParameter('name', $name)
-                                            ->andwhere ('p.name = :name');
+                                            -> andwhere ($queryBuilder->expr()->eq  ( 
+                                                                                        $queryBuilder-> expr()->lower('prod.name'), ':name'
+                                                                                    ) );
             }
             $products = $queryBuilder->getQuery()->getResult();
 
         //saving info about chosen/not chosen products (by saving GET form parameters) 
             $request= Request::createFromGlobals();
-            $requestForm=$request->query->get('form');
-            $this->session->set('sessionForm', $requestForm  );
+            $requestFormProduct=$request->query->get('product');
+            $this->session->set('sessionFormProduct', $requestFormProduct);
             
             $contents = $this->renderView('person_like_product_edit/person_like_product_edit.html.twig', [
                 
@@ -430,8 +352,6 @@ class PersonLikeProductModuleController extends AbstractController
 
     public function person_like_product_add ($id_person, $id_product)
     {
-        $requestForm=$this->session->get('sessionForm'); 
-        
     // extracting array of PersonLikeProduct - 1 object for the chosen product and person
         $personLikeProductManager = $this->getDoctrine()->getManager();
         $personLikeProductArray = $personLikeProductManager->getRepository(PersonLikeProduct::class)
@@ -456,12 +376,11 @@ class PersonLikeProductModuleController extends AbstractController
             $personLikeProductManager ->flush();
 
         //reconstraction of chosen/not chosen products (by getting saved GET form parameters) 
-            $request= Request::createFromGlobals();
-            $requestForm=$this->session->get('sessionForm'); 
+            $requestFormProduct=$this->session->get('sessionFormProduct'); 
         }
        
         return $this->redirectToRoute( 'person_like_product_edit', ['id_person'=> $id_person,
-                                                                    'form'=>$requestForm]);
+                                                                    'product'=>$requestFormProduct]);
     }
 
     public function person_like_product_delete ( $id_person, $id_product)
@@ -492,10 +411,10 @@ class PersonLikeProductModuleController extends AbstractController
         }   */
 
     //reconstraction of chosen/not chosen products (by getting saved GET form parameters) 
-        $requestForm=$this->session->get('sessionForm'); 
+        $requestFormProduct=$this->session->get('sessionFormProduct'); 
         
         return $this->redirectToRoute( 'person_like_product_edit', ['id_person'=> $id_person,
-                                                                    'form'=>$requestForm]);
+                                                                    'product'=>$requestFormProduct]);
     }
 
     public function product_like_person_edit(Request $request, $id_product) : Response
@@ -512,52 +431,12 @@ class PersonLikeProductModuleController extends AbstractController
 
         $person = new Person();
         $form_person = $this->createForm (PersonType::class, $person,['method' => 'GET'])
-                                ->add('login', ChoiceType::class, [
-                                            'label'=>'Login:',
-                                            'required' => false,
-                                            'attr' => array('class'=>'js-select2-person-login'),
-                                            'mapped' => false,
-                                ])
-
-                                ->add('i_name', ChoiceType::class, [
-                                            'label'=>'Name:',
-                                            'required' => false,
-                                            'mapped' => false,
-                                            'attr' => array('class'=>'js-select2-person-i'),
-                                            'mapped' => false, 
-                                ])
-
-                                ->add('f_name', ChoiceType::class, [
-                                            'label'=>'Surname:',
-                                            'required' => false,
-                                            'mapped' => false,
-                                            'attr' => array('class'=>'js-select2-person-f'),
-                                            'mapped' => false, 
-                                ])
-                                ->add('state', ChoiceType::class, [
-                                                'label'=>'Choose the State:',
-                                                'choices'=> [
-                                                    'Active' => Person::ACTIVE,
-                                                    'Banned' => Person::BANNED,
-                                                    'Deleted' => Person::DELETED,
-                                                    ],
-                                                'placeholder'=>"",
-                                                'expanded'=>true, 'multiple'=>true,
-                                                'data' => [Person::ACTIVE],
-                                                'mapped' => false, 
-                                ]) 
-
                                 ->add('form_person_like_product', HiddenType::class, ['mapped' => false])
                                 ->add('send', SubmitType::class, ['label'=>'Show users']);
                                
         $form_person->handleRequest($request);
                 
-        $request= Request::createFromGlobals();
-        $requestForm=$request->query->get('person');
-        $this->session->set('sessionFormPerson', $requestForm  );
-        
         $persons=array();
-        
         if ($form_person->isSubmitted() ) {
                            
             $login=$form_person->get('login')->getData();
@@ -594,8 +473,8 @@ class PersonLikeProductModuleController extends AbstractController
             $persons = $queryBuilder->getQuery()->getResult();
 
             $request= Request::createFromGlobals();
-            $requestForm=$request->query->get('person');
-            $this->session->set('sessionFormPerson', $requestForm  );
+            $requestFormPerson=$request->query->get('person');
+            $this->session->set('sessionFormPerson', $requestFormPerson  );
             
             $contents = $this->renderView('product_like_person_edit/product_like_person_edit.html.twig', [
                 
@@ -622,8 +501,7 @@ class PersonLikeProductModuleController extends AbstractController
 
     public function product_like_person_add ($id_product, $id_person)
     {
-        $requestForm=$this->session->get('sessionFormPerson'); 
-        
+                
     // extracting array of PersonLikeProduct - 1 object for the chosen product and person        
         $productLikePersonManager = $this->getDoctrine()->getManager();
         $productLikePersonArray = $productLikePersonManager->getRepository(PersonLikeProduct::class)
@@ -648,11 +526,11 @@ class PersonLikeProductModuleController extends AbstractController
             $productLikePersonManager ->flush();
 
         //reconstraction of chosen/not chosen products (by getting saved GET form parameters) 
-            $requestForm=$this->session->get('sessionFormPerson'); 
+            $requestFormPerson=$this->session->get('sessionFormPerson'); 
         }
         
         return $this->redirectToRoute( 'product_like_person_edit', ['id_product'=> $id_product,
-                                                                    'person'=>$requestForm]);
+                                                                    'person'=>$requestFormPerson]);
     }
 
     public function product_like_person_delete ($id_product, $id_person)
@@ -684,10 +562,10 @@ class PersonLikeProductModuleController extends AbstractController
         }   */
 
     //reconstraction of chosen/not chosen products (by getting saved GET form parameters) 
-        $requestForm=$this->session->get('sessionFormPerson'); 
+        $requestFormPerson=$this->session->get('sessionFormPerson'); 
         
         return $this->redirectToRoute( 'product_like_person_edit', ['id_product'=> $id_product,
-                                                                    'person'=>$requestForm]);
+                                                                    'person'=>$requestFormPerson]);
     }
 
 }

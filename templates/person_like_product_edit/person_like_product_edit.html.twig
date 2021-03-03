@@ -41,7 +41,7 @@
         
         {{ form(form_product) }}
 
-        <button type="button"><a class="button" href="{{ path('person_like_product_edit', {id_person: person.id}) }}">RESET</a></button><br>
+        <button id='reset' type="button"><a class="button" href="{{ path('person_like_product_edit', {id_person: person.id}) }}">RESET</a></button><br>
 
         {% if products is not empty  %}
             <h1>Choose new likes:</h1>

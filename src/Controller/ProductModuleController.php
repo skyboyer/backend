@@ -8,12 +8,13 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
+use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\ResetType;
 use Symfony\Component\Validator\Constraints\DateTimeInterface;
 use Symfony\Component\Validator\Constraints\DateTime;
-
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
+
 use Symfony\Component\Form\Form;
 use Symfony\Component\Form\AbstractType;
 
@@ -35,57 +36,41 @@ class ProductModuleController extends AbstractController
     public function product(Request $request) : Response
     {     
     // filter for products by name and date
-        $form = $this->createFormBuilder()
-                    ->setMethod('GET')
+        $product = new Product();
+        $form_product = $this->createForm (ProductType::class, $product,['method' => 'GET'])
                     ->add('name', TextType::class, ['label'=>'Name:',
-                                        'required' => false])
-                    ->add('date_from', DateType::class, ['label'=>'Date from:',
-                                                'required' => false,
-                                                'widget' => 'single_text',
-                                                'html5' => false,
-                                                'attr' => ['class' => 'js-datepicker', 'readonly'=>'readonly' ],
-                                                ])
-                    ->add('date_to', DateType::class, ['label'=>'Date to:',
-                                                'required' => false,
-                                                'widget' => 'single_text',
-                                                'html5' => false,
-                                                'attr' => ['class' => 'js-datepicker', 'readonly'=>'readonly'],
-                                                ])
-                    ->add('send', SubmitType::class, ['label'=>'Show the chosen products'])
-                    ->getForm();
+                                                    'required' => false])
+                    ->add('send', SubmitType::class, ['label'=>'Show the chosen products']);
+        
+        $form_product->handleRequest($request);
 
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() ) {
+        if ($form_product->isSubmitted() ) {
             
-            $data = $form->getData();
-            $date_from=$data['date_from'];
-            $date_to=$data['date_to'];
-            $name=$data['name'];
+            $name=$form_product->get('name')->getData();
+            $date_from=$form_product->get('date_from')->getData();
+            $date_to=$form_product->get('date_to')->getData();
 
             $entityManager = $this->getDoctrine()->getManager();
             $queryBuilder = $entityManager->createQueryBuilder()
-                                            -> select('p')
-                                            -> from ('App\Entity\Product', 'p')
-                                            -> orderBy('p.public_date', 'ASC');
+                                            -> select('prod')
+                                            -> from ('App\Entity\Product', 'prod')
+                                            -> orderBy('prod.public_date', 'ASC');
             if (isset($date_from) ) {
                 $date_from=date_format($date_from, 'Y-m-d');
                 $queryBuilder=$queryBuilder->setParameter('date_from', $date_from)
-                                            ->andwhere ('p.public_date >= :date_from');
+                                            ->andwhere ('prod.public_date >= :date_from');
             }
                                            
             if (isset($date_to) ) {
                 $date_to=date_format($date_to, 'Y-m-d');
                 $queryBuilder=$queryBuilder->setParameter('date_to', $date_to)
-                                            ->andwhere ('p.public_date<= :date_to');
+                                            ->andwhere ('prod.public_date<= :date_to');
             }
             if (isset($name)) {
-                $queryBuilder=$queryBuilder->setParameter('name', strtolower($name))
-                                            ->andwhere ($queryBuilder->expr()->eq(
-                                                       $queryBuilder-> expr()->lower('p.name'), ':name') ) ;
+                $queryBuilder=$queryBuilder->setParameter('name', addcslashes($name, '%_').'%') 
+                                            -> andWhere('prod.name LIKE :name');
             }
             $products = $queryBuilder->getQuery()->getResult();
-
         }
 
         else {
@@ -97,12 +82,11 @@ class ProductModuleController extends AbstractController
         
         $contents = $this->renderView('product/product.html.twig', [
                 
-            'form' => $form->createView(),
+            'form' => $form_product->createView(),
             'products' => $products,
                 
             ]);
         return new Response ($contents);
-        
     }
 
     public function product_edit (Request $request, $id)
@@ -122,39 +106,42 @@ class ProductModuleController extends AbstractController
             $name1=$product->getName();
             $date1=date_format($product->getPublicDate(), 'Y-m-d');
             $info1=$product->getInfo();
+             
+            $form_product = $this->createForm (ProductType::class, $product)
+                                ->add('name', TextType::class, ['label'=>'Name:'])
+                                ->add('info', TextareaType::class, ['label'=>'Product information:'])
+                                ->add('public_date', DateType::class, [
+                                                'label'=>'Date of publication',
+                                                'widget' => 'single_text',
+                                                'html5' => false,
+                                                'attr' => ['class' => 'js-datepicker', 'readonly'=>'readonly'] ])
+                                ->add('date_from', HiddenType::class, ['mapped'=>false])
+                                ->add('date_to', HiddenType::class, ['mapped'=>false])
+                                ->add('save', SubmitType::class, ['label'=> 'Save changes']);
+
                 
-            $form1 = $this->createForm (ProductType::class, $product)
-                            ->add('public_date', DateType::class, [
-                                'label'=>'Date of publication',
-                                'widget' => 'single_text',
-                                'html5' => false,
-                                'attr' => ['class' => 'js-datepicker', 'readonly'=>'readonly'] ]) //adding  datepicker
-                            ->add('save', SubmitType::class, ['label'=> 'Save changes']);
-    
     //button for deleting product    
-            $form2 = $this->createFormBuilder()
+            $form_delete = $this->createFormBuilder()
                 ->add('send', SubmitType::class, ['label'=>'Delete the Product!!'])
                 ->getForm();
             
-            $form1->handleRequest($request);
-            $form2->handleRequest($request);
+            $form_product->handleRequest($request);
+            $form_delete->handleRequest($request);
 
             $save='unsaved';
-            if ($form1->isSubmitted()) {
+
+            if ($form_product->isSubmitted()) {
                 $save='saved';
                 $productManager->flush();
-                               
             }
-            elseif ($form2->isSubmitted()) {
-                
+            elseif ($form_delete->isSubmitted()) {
                 return $this->redirectToRoute('product_delete', ['id' => $id]);
-                
             }
               
             $contents = $this->renderView('product_edit/product_edit.html.twig',
                 [
-                    'form1' => $form1->createView(),
-                    'form2' => $form2->createView(),
+                    'form_product' => $form_product->createView(),
+                    'form_delete' => $form_delete->createView(),
                     'id'=> $id,
                     'save' => $save,
 
@@ -206,7 +193,7 @@ class ProductModuleController extends AbstractController
         $stmt->execute();*/
 
     //remove product from DB simple, all assotiations are removed thanks to "cascade={"remove"}"-annotation in property $ProductHavePersons in Product class:
-       $productManager = $this->getDoctrine()->getManager();
+        $productManager = $this->getDoctrine()->getManager();
         $product = $productManager->getRepository(Product::class)->find($id);
         $productManager->remove($product);
         $productManager->flush(); 
@@ -218,9 +205,9 @@ class ProductModuleController extends AbstractController
         $DQLquery = $productManager->createQuery("  DELETE App\Entity\Product p 
                                                     WHERE p.id = :id ");
         $DQLquery->setParameter('id', $id);
-        $DQLquery->execute(); 
+        $DQLquery->execute(); */
 
-        return $this->redirectToRoute('product');*/
+        return $this->redirectToRoute('product');
     }
 
     public function product_add (Request $request)
@@ -230,12 +217,16 @@ class ProductModuleController extends AbstractController
         $product->setPublicDate(date_create());
         
         $form = $this->createForm (ProductType::class, $product)
-                ->add('public_date', DateType::class, [
-                                'label'=>'Date of publication',
-                                'widget' => 'single_text',
-                                'html5' => false,
-                                'attr' => ['class' => 'js-datepicker', 'readonly'=>'readonly'] ])
-                ->add('save', SubmitType::class, ['label'=>'Add the product']);
+                                ->add('name', TextType::class, ['label'=>'Name:'])
+                                ->add('info', TextareaType::class, ['label'=>'Product information:'])
+                                ->add('public_date', DateType::class, [
+                                                'label'=>'Date of publication',
+                                                'widget' => 'single_text',
+                                                'html5' => false,
+                                                'attr' => ['class' => 'js-datepicker', 'readonly'=>'readonly'] ])
+                                ->add('date_from', HiddenType::class, ['mapped'=>false])
+                                ->add('date_to', HiddenType::class, ['mapped'=>false])
+                                ->add('save', SubmitType::class, ['label'=>'Add the product']);
          
         $form->handleRequest($request);
        

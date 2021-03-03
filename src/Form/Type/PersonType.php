@@ -24,8 +24,36 @@ class PersonType extends AbstractType
     {
                
         $builder
-            
-            ->add('login', TextType::class, ['label'=>'Login (ATTENTION ON REGISTER!):'])
+                ->add('login', ChoiceType::class, [
+                                                    'label'=>'Login:',
+                                                    'required' => false,
+                                                    'attr' => array('class'=>'js-select2-person-login'),
+                                                    'mapped' => false  ])
+                ->add('i_name', ChoiceType::class, [
+                                                    'label'=>'Name:',
+                                                    'required' => false,
+                                                    'mapped' => false,
+                                                    'attr' => array('class'=>'js-select2-person-i'),
+                                                    'mapped' => false  ])
+                ->add('f_name', ChoiceType::class, [
+                                                    'label'=>'Surname:',
+                                                    'required' => false,
+                                                    'mapped' => false,
+                                                    'attr' => array('class'=>'js-select2-person-f'),
+                                                    'mapped' => false  ])
+                ->add('state', ChoiceType::class, [
+                                                    'label'=>'Choose the State:',
+                                                    'choices'=> [
+                                                        'Active' => Person::ACTIVE,
+                                                        'Banned' => Person::BANNED,
+                                                        'Deleted' => Person::DELETED,
+                                                        ],
+                                                    'placeholder'=>"",
+                                                    'expanded'=>true, 'multiple'=>true,
+                                                    'data' => [Person::ACTIVE],
+                                                    'mapped' => false  ]);
+        
+        /*  ->add('login', TextType::class, ['label'=>'Login (ATTENTION ON REGISTER!):'])
             ->add('i_name', TextType::class, ['label'=>'Name:'])
             ->add('f_name', TextType::class, ['label'=>'Surname:'])
             
@@ -38,7 +66,7 @@ class PersonType extends AbstractType
                                                     ],
                                                 'placeholder'=>"",
                                                 
-                                            ]); 
+                                            ]); */
 
         $builder->addEventListener(
             

@@ -8,9 +8,10 @@
     
     <h1>List of Users</h1>   
 
-    {#{{form(form)}}#}
-    {{ form_start(form, { attr: {novalidate: 'novalidate'} }) }}
-    {{ form_end(form) }}
+    {{form(form)}}
+
+   {# {{ form_start(form, { attr: {novalidate: 'novalidate'} }) }}
+    {{ form_end(form) }}  #}
 
     <button type="button"><a class="button" href="{{ path('person') }}">Show all users</a></button>
 
