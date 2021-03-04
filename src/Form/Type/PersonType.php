@@ -32,13 +32,11 @@ class PersonType extends AbstractType
                 ->add('i_name', ChoiceType::class, [
                                                     'label'=>'Name:',
                                                     'required' => false,
-                                                    'mapped' => false,
                                                     'attr' => array('class'=>'js-select2-person-i'),
                                                     'mapped' => false  ])
                 ->add('f_name', ChoiceType::class, [
                                                     'label'=>'Surname:',
                                                     'required' => false,
-                                                    'mapped' => false,
                                                     'attr' => array('class'=>'js-select2-person-f'),
                                                     'mapped' => false  ])
                 ->add('state', ChoiceType::class, [

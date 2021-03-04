@@ -56,16 +56,16 @@
                             data: function (params) {
                                 return {
                                     q: params.term,
-                                    page: params.page,
+                                    //page: params.page,
                                 }; 
                             },
                             processResults: function (data, params) { 
-                                params.page = params.page || 1;
+                                //params.page = params.page || 1;
                                 return {
                                     results: data,
-                                    pagination: {
-                                       more: params.page * 10 < data.total_count
-                                    } 
+                                    /*pagination: {
+                                       more: params.page * 1 < 2  
+                                    }   */
                                 };   
                             },
                         },
@@ -74,7 +74,76 @@
                         placeholder: '',
                     });
                 })
-            </script>
+
+//some code for learning:
+                            /*    
+                                return {
+                                    results:[
+                                                {id: 1, text: 'tre'},
+                                                {id: 2, text: 'tre2'},
+                                            ],
+                                }
+                            */
+                           
+                            /*       
+                                return {
+                                    results: $.map(data, function(obj) {
+                                                                            if(obj.id!=0){
+                                                                                return { id: obj.id, text: obj.login };
+                                                                            }
+                                                                            else
+                                                                                {return {id: obj.id, text: obj.login}}
+                                                                        })
+                                };
+                            */
+
+                            /*   
+                                data = jQuery.map(data.results, function (obj) { 
+                                        obj.id = obj.id;
+                                        obj.text = obj.login;
+                                        //obj.i = obj.i_name;
+                                        //obj.f = obj.f_name;
+                                        //obj.state = obj.state;
+                                        return obj;
+                                    return {
+                                        results: data,
+                                        //pagination: {
+                                        //                more: params.page * 30 < data.total_count
+                                        //            }
+                                        }
+                                });   
+                            */     
+                            /*
+                                var data = jQuery.map(data, function (obj) { 
+                                    obj.text = obj.text || obj.login; // replace name with the property used for the text
+                                    return obj;
+                                    return {
+                                        results: data,
+                                    }
+                                });   
+                            */
+
+                            /*    }).on('change', function(e) {
+
+                            let label = $(this).find("[data-select2-tag=true]");
+                            if (label.length && $.inArray(label.val(), $(this).val()!= -1)) {
+                              
+                                $.ajax({
+                                    url: '/ajax/search/person/login',
+                                    dataType: 'json',
+                                    delay: 350
+                                }).done(function(data){
+                                    console.log(data)
+                                    label.replaceWith(`<option selected value="${data.id}">${label.val()}</option>`);
+
+                                });
+                            }
+
+                    });  */
+
+              </script>
+
+
 
             <script>
                 $(document).ready(function() {
@@ -87,16 +156,14 @@
                             data: function (params) {
                                 return {
                                     q: params.term,
-                                    page: params.page,
+                                    
                                 }; 
                             },
-                            processResults: function (data, params) { 
-                                params.page = params.page || 1;
+                            processResults: function (data) { 
+                                
                                 return {
                                     results: data,
-                                    pagination: {
-                                       more: params.page * 10 < data.total_count
-                                    } 
+                                    
                                 };   
                             },
                         },
@@ -118,16 +185,14 @@
                             data: function (params) {
                                 return {
                                     q: params.term,
-                                    page: params.page,
+                                    
                                 }; 
                             },
-                            processResults: function (data, params) { 
-                                params.page = params.page || 1;
+                            processResults: function (data) { 
+                                
                                 return {
                                     results: data,
-                                    pagination: {
-                                       more: params.page * 10 < data.total_count
-                                    } 
+                                    
                                 };   
                             },
                         },
@@ -150,28 +215,22 @@
                             dataType: 'json',
                             delay: 350, // wait 350 milliseconds before triggering the request
                            
-
                             // Additional AJAX parameters go here:
                             data: function (params) {
                                 return {
                                     q: params.term, // search term
-                                    page: params.page,
+                                    
                                 };
                             },
                             
                             processResults: function (data, params) { 
-                                params.page = params.page || 1;
+                                
                                 return {
                                     results: data,
-                                    pagination: {
-                                        more: params.page * 3 < data.total_count
-                                    } 
+                                    
                                 };   
                             },
                         }        
-                            
-           
-                                
                     });
                 });
             </script>

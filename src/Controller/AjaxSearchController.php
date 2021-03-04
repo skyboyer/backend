@@ -132,7 +132,6 @@ class AjaxSearchController extends AbstractController
         $DQLquery->setParameter('id', $id);
         $DQLquery->execute(); */
 
-        $initArray=array();
         $returnArray=array();
        
         foreach($results as $result) {
