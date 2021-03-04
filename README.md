@@ -14,11 +14,11 @@ Pages:
 /localhost/index.php/person/like/product -  filter with <select> fields (used Select2-ajax plugin)  for user's preferencies/product's lovers with links to adding/remowing user's likes or links to adding/removing product's lovers
 
 ________________________________________________________
-
+					
 		
 
 Initial task: 
-
+       
 
 Na podstawie diagramu EER (plik schema.mwb), należy wykonać aplikację z funkcjami:
 
